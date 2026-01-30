@@ -21,6 +21,10 @@ function createServer() {
 
 // Auto-start server only when run directly via `node server.js`
 // When required as a module (for testing), the server is not auto-started
+/* istanbul ignore next -- @preserve
+   This block only runs when executed directly via `node server.js`.
+   It cannot be covered by Jest as it requires `require.main === module`.
+   Coverage is verified by the direct execution test in the test suite. */
 if (require.main === module) {
   const server = createServer();
   server.listen(port, hostname, () => {
