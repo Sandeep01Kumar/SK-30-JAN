@@ -357,13 +357,20 @@ describe('Server Configuration', () => {
     expect(typeof serverModule.server.listen).toBe('function');
     expect(typeof serverModule.server.close).toBe('function');
     
-    // Clean up - close the server if it started
-    if (serverModule.server.listening) {
-      serverModule.server.close(() => {
-        done();
-      });
-    } else {
-      done();
-    }
+    // Clean up - wait for server to be listening, then close it
+    // Use a small delay to allow the server.listen() callback to complete
+    const cleanupServer = () => {
+      if (serverModule.server.listening) {
+        serverModule.server.close(() => {
+          done();
+        });
+      } else {
+        // Wait a bit and check again
+        setTimeout(cleanupServer, 50);
+      }
+    };
+    
+    // Start cleanup after a brief moment to allow async listen to complete
+    setTimeout(cleanupServer, 100);
   });
 });
