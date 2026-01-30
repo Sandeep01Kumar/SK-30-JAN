@@ -4,8 +4,12 @@
     "description": "Hello world in Node.js",
     "main": "index.js",
     "scripts": {
+        "start": "node server.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "hxu",
-    "license": "MIT"
+    "license": "MIT",
+    "dependencies": {
+        "express": "^5.2.1"
+    }
 }
