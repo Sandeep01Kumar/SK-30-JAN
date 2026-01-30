@@ -234,12 +234,14 @@ describe('HTTP Server (server.js)', () => {
      * Test HM-006: HEAD method returns headers without body
      * 
      * HEAD requests should return 200 status but with an empty body,
-     * as per HTTP specification for HEAD method.
+     * as per HTTP specification for HEAD method. Supertest returns
+     * undefined for response.text on HEAD requests.
      */
     test('HEAD returns 200 with no body (HM-006)', async () => {
       const response = await request(server).head('/');
       expect(response.status).toBe(200);
-      expect(response.text).toBe('');
+      // HEAD requests have no body - supertest returns undefined for response.text
+      expect(response.text === '' || response.text === undefined).toBe(true);
     });
 
     /**
@@ -421,22 +423,24 @@ describe('HTTP Server (server.js)', () => {
     });
 
     /**
-     * Test: Server emits error event for invalid port
+     * Test: Server emits error event for invalid hostname
      * 
-     * Attempting to listen on an invalid port should emit an error.
+     * Attempting to listen on an invalid hostname should emit an error.
+     * This is more reliable than testing privileged ports which may succeed as root.
      */
-    test('should emit error for invalid port', (done) => {
+    test('should emit error for invalid hostname', (done) => {
       const testServer = createServer();
       
       testServer.on('error', (err) => {
         expect(err).toBeDefined();
-        expect(err.code).toBe('EACCES');
+        // EADDRNOTAVAIL for invalid address
+        expect(['EADDRNOTAVAIL', 'ENOENT', 'EINVAL'].includes(err.code)).toBe(true);
+        testServer.close();
         done();
       });
       
-      // Port 0-1023 require root privileges, port 80 should fail for non-root
-      // Using a privileged port that will fail
-      testServer.listen(80, hostname);
+      // Use an invalid IP address that is not available on the system
+      testServer.listen(0, '192.0.2.1'); // TEST-NET-1 - reserved, not routable
     });
   });
 
@@ -452,15 +456,24 @@ describe('HTTP Server (server.js)', () => {
      * 
      * The server should successfully handle multiple simultaneous
      * requests without errors or data corruption.
+     * Uses a dedicated listening server to avoid connection issues.
      */
-    test('should handle 10 concurrent requests (CR-001)', async () => {
-      const requests = Array(10).fill().map(() => request(server).get('/'));
-      const responses = await Promise.all(requests);
-      
-      responses.forEach((response) => {
-        expect(response.status).toBe(200);
-        expect(response.text).toBe('Hello, World!\n');
-        expect(response.headers['content-type']).toBe('text/plain');
+    test('should handle 10 concurrent requests (CR-001)', (done) => {
+      const testServer = createServer();
+      testServer.listen(0, hostname, async () => {
+        try {
+          const requests = Array(10).fill().map(() => request(testServer).get('/'));
+          const responses = await Promise.all(requests);
+          
+          responses.forEach((response) => {
+            expect(response.status).toBe(200);
+            expect(response.text).toBe('Hello, World!\n');
+            expect(response.headers['content-type']).toBe('text/plain');
+          });
+          testServer.close(done);
+        } catch (err) {
+          testServer.close(() => done(err));
+        }
       });
     });
 
@@ -468,15 +481,24 @@ describe('HTTP Server (server.js)', () => {
      * Test: Handle high volume of concurrent requests
      * 
      * Server should handle a larger number of concurrent requests.
+     * Uses a dedicated listening server to avoid connection issues.
      */
-    test('should handle 50 concurrent requests', async () => {
-      const requests = Array(50).fill().map(() => request(server).get('/'));
-      const responses = await Promise.all(requests);
-      
-      expect(responses.length).toBe(50);
-      responses.forEach((response) => {
-        expect(response.status).toBe(200);
-        expect(response.text).toBe('Hello, World!\n');
+    test('should handle 50 concurrent requests', (done) => {
+      const testServer = createServer();
+      testServer.listen(0, hostname, async () => {
+        try {
+          const requests = Array(50).fill().map(() => request(testServer).get('/'));
+          const responses = await Promise.all(requests);
+          
+          expect(responses.length).toBe(50);
+          responses.forEach((response) => {
+            expect(response.status).toBe(200);
+            expect(response.text).toBe('Hello, World!\n');
+          });
+          testServer.close(done);
+        } catch (err) {
+          testServer.close(() => done(err));
+        }
       });
     });
 
