@@ -4,11 +4,18 @@ Test project for backprop integration. Do not touch!
 
 ## Overview
 
-This is a simple Node.js HTTP server built with Express.js framework.
+This is a simple Node.js HTTP server built with the Express.js framework. The server provides REST API endpoints that return plain text responses.
+
+> **Note:** This project was migrated from the native Node.js `http` module to Express.js for improved routing capabilities and cleaner code structure.
+
+## Prerequisites
+
+- Node.js (v18.0.0 or higher)
+- npm (v6.0.0 or higher)
 
 ## Installation
 
-Install dependencies before running the server:
+Install the project dependencies before running the server:
 
 ```bash
 npm install
@@ -16,7 +23,7 @@ npm install
 
 ## Starting the Server
 
-Run the server using npm:
+You can start the server using either of the following commands:
 
 ```bash
 npm start
@@ -32,17 +39,27 @@ The server binds to `127.0.0.1:3000` by default.
 
 ## API Endpoints
 
-| Endpoint | Method | Response | Content-Type |
-|----------|--------|----------|--------------|
-| `/` | GET | `Hello, World!\n` | text/plain |
-| `/evening` | GET | `Good evening` | text/plain |
+The server exposes the following REST API endpoints:
+
+| Endpoint | Method | Content-Type | Response |
+|----------|--------|--------------|----------|
+| `/` | GET | text/plain | `Hello, World!\n` |
+| `/evening` | GET | text/plain | `Good evening` |
 
 ### GET /
 
 Returns a "Hello, World!" greeting message.
 
+**Request:**
+```
+GET http://127.0.0.1:3000/
+```
+
 **Response:**
 ```
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
 Hello, World!
 ```
 
@@ -50,15 +67,21 @@ Hello, World!
 
 Returns a "Good evening" greeting message.
 
+**Request:**
+```
+GET http://127.0.0.1:3000/evening
+```
+
 **Response:**
 ```
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
 Good evening
 ```
 
 ## Technical Details
 
-- **Framework:** Express.js 5.x
-- **Runtime:** Node.js 18+
-- **Server:** Binds to `127.0.0.1:3000`
-
-This server was migrated from the native Node.js `http` module to Express.js framework to provide a more extensible routing system.
+- **Framework:** Express.js v5.x
+- **Server Binding:** 127.0.0.1:3000
+- **Response Format:** Plain text (text/plain)
