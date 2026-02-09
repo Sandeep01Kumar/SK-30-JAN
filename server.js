@@ -1,17 +1,18 @@
 /**
- * @fileoverview Simple HTTP server that responds with "Hello, World!" to all requests.
- * This module creates a basic Node.js HTTP server for demonstration and testing purposes.
+ * @fileoverview Express.js HTTP server with two endpoints: a root endpoint that
+ * responds with "Hello, World!" and an evening endpoint that responds with "Good evening".
+ * This module creates an Express.js application for demonstration and testing purposes.
  *
  * @module server
  * @author hxu
- * @version 1.0.0
+ * @version 1.1.0
  * @license MIT
- * @requires http
- * @see {@link https://nodejs.org/api/http.html} Node.js HTTP Documentation
+ * @requires express
+ * @see {@link https://expressjs.com/} Express.js Documentation
  */
 
-// Import Node.js built-in HTTP module for creating the web server
-const http = require('http');
+// Import Express.js web framework for HTTP routing and server creation
+const express = require('express');
 
 /**
  * Server hostname/IP address to bind to.
@@ -28,23 +29,42 @@ const hostname = '127.0.0.1';
 const port = 3000;
 
 /**
- * HTTP server instance with request handler callback.
+ * Express application instance.
+ * Creates the core Express.js app that handles HTTP routing and middleware.
  *
- * @callback requestHandler
- * @param {http.IncomingMessage} req - The incoming HTTP request object
- * @param {http.ServerResponse} res - The HTTP response object to send data back
- *
- * @type {http.Server}
+ * @type {import('express').Express}
  */
-const server = http.createServer((req, res) => {
-  // Set HTTP status code to 200 (OK) indicating successful request
-  res.statusCode = 200;
+const app = express();
 
-  // Set Content-Type header to indicate plain text response format
-  res.setHeader('Content-Type', 'text/plain');
+/**
+ * Root route handler — serves the Hello World response.
+ * Responds with plain text "Hello, World!\n" to maintain backward compatibility
+ * with the original raw http module implementation.
+ *
+ * @name GET /
+ * @function
+ * @param {import('express').Request} req - The Express request object
+ * @param {import('express').Response} res - The Express response object
+ * @returns {void} Sends HTTP 200 with Content-Type: text/plain
+ */
+app.get('/', (req, res) => {
+  // Set Content-Type to text/plain and send the Hello World response body
+  res.type('text').send('Hello, World!\n');
+});
 
-  // Send response body and signal that the response is complete
-  res.end('Hello, World!\n');
+/**
+ * Evening route handler — serves the Good Evening response.
+ * Responds with plain text "Good evening" as the new feature endpoint.
+ *
+ * @name GET /evening
+ * @function
+ * @param {import('express').Request} req - The Express request object
+ * @param {import('express').Response} res - The Express response object
+ * @returns {void} Sends HTTP 200 with Content-Type: text/plain
+ */
+app.get('/evening', (req, res) => {
+  // Set Content-Type to text/plain and send the Good Evening response body
+  res.type('text').send('Good evening');
 });
 
 /**
@@ -56,11 +76,16 @@ const server = http.createServer((req, res) => {
  * // Server running at http://127.0.0.1:3000/
  *
  * @example
- * // Test the endpoint
+ * // Test the root endpoint
  * // $ curl http://127.0.0.1:3000/
  * // Hello, World!
+ *
+ * @example
+ * // Test the evening endpoint
+ * // $ curl http://127.0.0.1:3000/evening
+ * // Good evening
  */
-server.listen(port, hostname, () => {
+app.listen(port, hostname, () => {
   // Log server URL to console once the server is ready to accept connections
   console.log(`Server running at http://${hostname}:${port}/`);
 });
