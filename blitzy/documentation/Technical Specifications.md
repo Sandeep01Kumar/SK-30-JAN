@@ -4,1105 +4,423 @@
 
 ## 0.1 Intent Clarification
 
-Based on the provided requirements, the Blitzy platform understands that the documentation objective is to **create comprehensive documentation** for a simple Node.js HTTP server application. The user's request encompasses multiple documentation deliverables that will enhance code maintainability, developer onboarding, and operational understanding.
+### 0.1.1 Core Feature Objective
 
-### 0.1.1 Core Documentation Objective
+Based on the prompt, the Blitzy platform understands that the new feature requirement is to **integrate the Express.js web framework into an existing minimal Node.js HTTP server project and add a new API endpoint** that returns a "Good evening" response. The current project (`hello_world`, v1.0.0) serves a single static "Hello, World!" response using only Node.js's built-in `http` module with zero external dependencies.
 
-**Request Category:** Create new documentation | Update existing documentation
+The specific feature requirements are:
 
-**Documentation Types Identified:**
-- API documentation (JSDoc comments in source code)
-- README file (comprehensive project documentation)
-- User guides (setup instructions)
-- Technical documentation (deployment guide)
-- Code documentation (inline explanations)
+- **Adopt Express.js as the web framework**: Replace the raw `http.createServer()` pattern in `server.js` with an Express.js application instance, introducing the project's first external npm dependency
+- **Preserve the existing "Hello World" endpoint**: The current `GET /` endpoint returning `"Hello, World!\n"` must continue to function identically after the Express.js migration, maintaining backward compatibility for any existing consumers
+- **Add a new "Good evening" endpoint**: Create a second HTTP GET endpoint that returns the response `"Good evening"` — this is the net-new feature capability being introduced
+- **Maintain project conventions**: The implementation must follow the existing code style (CommonJS modules, JSDoc annotations, `const` declarations, 2-space indentation) and project structure patterns already established in the repository
 
-**Explicit Requirements (as stated by user):**
+**Implicit requirements detected:**
 
-| # | Requirement | Documentation Type | Priority |
-|---|-------------|-------------------|----------|
-| 1 | Add JSDoc comments to server.js functions | API/Code Documentation | High |
-| 2 | Create comprehensive README | Project Documentation | High |
-| 3 | Setup instructions | User Guide | High |
-| 4 | API documentation | Technical Reference | High |
-| 5 | Deployment guide | Operations Documentation | High |
-| 6 | Inline code explanations | Code Documentation | High |
+- The `package.json` must be updated to declare `express` as a production dependency
+- The `package-lock.json` will be regenerated to include Express.js and its transitive dependency tree
+- The `README.md` must be updated to document the new endpoint, the Express.js dependency, and the revised project structure
+- The server port (`3000`) and hostname (`127.0.0.1`) configuration must be preserved
+- Console startup logging must remain functional after migration
 
 ### 0.1.2 Special Instructions and Constraints
 
-**Directives Captured:**
-- No specific style guide provided - will follow JSDoc and Markdown best practices
-- No template constraints specified - will create documentation structure from scratch
-- Comprehensive coverage requested - all aspects of the application should be documented
+- **Setup instruction provided by the user**: `npm` — confirming npm is the designated package manager for dependency installation
+- **Backward compatibility**: The existing `GET /` endpoint returning `"Hello, World!\n"` must remain operational after Express.js integration
+- **No environment variables or secrets**: The user has not specified any environment variables or secrets for this feature
+- **No attachments or Figma screens**: No external design files or attachments have been provided
+- **No specific Express.js version requested**: The user has not specified a particular Express.js version, so the latest stable release available on npm will be used
 
-**Template Requirements:** None specified - documentation will follow industry-standard Node.js project conventions
-
-**Style Preferences:**
-- Clear and concise technical writing
-- Proper code examples with syntax highlighting
-- Structured sections for easy navigation
+User Example (exact user request):
+> "this is a tutorial of node js server hosting one endpoint that returns the response "Hello world". Could you add expressjs into the project and add another endpoint that return the response of "Good evening"?"
 
 ### 0.1.3 Technical Interpretation
 
-These documentation requirements translate to the following technical documentation strategy:
+These feature requirements translate to the following technical implementation strategy:
 
-- **To add JSDoc comments**, we will **update** `server.js` by inserting JSDoc block comments above each function, constant, and module declaration with proper tags (@description, @param, @returns, @module, @constant, @type, @example)
+- To **integrate Express.js**, we will modify `server.js` to replace the `http.createServer()` server instantiation with an Express application instance (`express()`), registering route handlers via `app.get()` instead of a monolithic request callback
+- To **preserve the existing Hello World endpoint**, we will register `app.get('/', ...)` that sends the same `"Hello, World!\n"` plain-text response with HTTP 200 status and `Content-Type: text/plain`
+- To **add the Good Evening endpoint**, we will create a new route `app.get('/evening', ...)` that responds with `"Good evening"` in plain text with HTTP 200 status
+- To **install Express.js**, we will run `npm install express` to add Express.js 5.2.1 (latest stable) as a production dependency in `package.json` and regenerate `package-lock.json`
+- To **update documentation**, we will modify `README.md` to reflect the new dependency, updated endpoint table, and revised installation instructions
 
-- **To create a comprehensive README**, we will **update** `README.md` with complete project overview, installation steps, usage examples, API reference, configuration details, deployment instructions, and license information
 
-- **To provide setup instructions**, we will **create** a dedicated section in README.md covering prerequisites, installation commands, environment configuration, and verification steps
+## 0.2 Repository Scope Discovery
 
-- **To document the API**, we will **create** endpoint documentation describing the HTTP server behavior, request handling, and response format
+### 0.2.1 Comprehensive File Analysis
 
-- **To create a deployment guide**, we will **create** a section covering production deployment considerations, server configuration, process management, and monitoring recommendations
+The repository is a deliberately minimal Node.js project consisting of four source files at the root level plus a documentation folder. Every file in the repository has been inspected and its relevance to the Express.js integration feature assessed below.
 
-- **To add inline code explanations**, we will **update** `server.js` with contextual comments explaining code logic and design decisions
+#### Existing Files Requiring Modification
 
-### 0.1.4 Inferred Documentation Needs
+| File Path | Current Purpose | Modification Required | Rationale |
+|-----------|----------------|----------------------|-----------|
+| `server.js` | Main HTTP server entry point using raw `http` module (67 lines) | **Major rewrite** | Replace `http.createServer()` with Express.js app; register route handlers for `/` and `/evening`; update JSDoc annotations |
+| `package.json` | npm manifest with zero dependencies (10 lines) | **Modify** | Add `express` to `dependencies`; update `description` and optionally `main` field; add `start` script |
+| `package-lock.json` | Deterministic lockfile recording only root package (13 lines) | **Auto-regenerated** | Will be regenerated by `npm install express` to include Express.js and all transitive dependencies |
+| `README.md` | Comprehensive project documentation (412 lines) | **Modify** | Update prerequisites, API endpoint table, installation notes, request flow diagram, configuration section, project structure, and deployment guide to reflect Express.js adoption and the new `/evening` endpoint |
 
-Based on code analysis, the following implicit documentation needs were identified:
+#### Existing Files/Folders NOT Requiring Modification
 
-| Source | Inferred Need | Rationale |
-|--------|---------------|-----------|
-| `server.js:1` | Module documentation | http module import requires explanation of its purpose |
-| `server.js:3-4` | Configuration documentation | hostname and port constants need environment context |
-| `server.js:6-10` | Request handler documentation | The callback function needs parameter and behavior docs |
-| `server.js:12-14` | Server lifecycle documentation | The listen call and callback need usage explanation |
-| `package.json` | Project metadata context | Name, version, and scripts should be referenced in README |
-| No tests defined | Testing section | README should note test availability status |
-| MIT License | License section | README should clarify licensing terms |
+| File/Folder Path | Purpose | Reason for Exclusion |
+|------------------|---------|---------------------|
+| `blitzy/` | Documentation artifacts folder | Contains project assessment and tech spec documents; no runtime code |
+| `blitzy/documentation/Project Guide.md` | Project assessment report | Historical document; not affected by feature addition |
+| `blitzy/documentation/Technical Specifications.md` | Agent action plan documentation | Specification artifact; not affected by runtime changes |
+| `.git/` | Git version control | Managed by Git; no manual changes needed |
 
-**User Journey Documentation Requirements:**
-- New developers need quick-start guide to run the server
-- Operations teams need deployment and monitoring guidance
-- Contributors need understanding of code structure and conventions
+#### Integration Point Discovery
 
-## 0.2 Documentation Discovery and Analysis
+| Integration Point | Location | Impact |
+|-------------------|----------|--------|
+| HTTP server creation | `server.js:39` (`http.createServer()`) | Replaced with `express()` application factory |
+| Request handler callback | `server.js:39-48` | Replaced with Express route handlers (`app.get()`) |
+| Server listen binding | `server.js:63-66` (`server.listen()`) | Replaced with `app.listen()` |
+| Module import | `server.js:14` (`require('http')`) | Replaced with `require('express')` |
+| Configuration constants | `server.js:21, 28` (`hostname`, `port`) | Retained; passed to `app.listen()` |
+| Response construction | `server.js:41-47` | Replaced with `res.send()` Express method |
 
-### 0.2.1 Existing Documentation Infrastructure Assessment
+### 0.2.2 Web Search Research Conducted
 
-**Repository Analysis Findings:**
+The following research was performed to inform this feature addition:
 
-Repository analysis reveals a **minimal documentation structure** with **significant coverage gaps**. The project contains only 4 files at the root level with no dedicated documentation folder.
+| Research Topic | Finding | Source |
+|----------------|---------|--------|
+| Latest Express.js stable version | Express.js 5.2.1 is the latest release on npm | npmjs.com/package/express |
+| Express.js 5.x Node.js requirements | Requires Node.js >= 18 | npm view express@5.2.1 engines |
+| Express.js 5.x stability status | Express 5.1.0 became the default `latest` tag on npm as of March 2025 | expressjs.com blog |
+| Express.js 5.x breaking changes | Dropped Node.js < 18 support; updated path-to-regexp; removed deprecated v3/v4 API methods | GitHub releases |
+| Node.js 20.x compatibility | Node.js 20.x (current project runtime) satisfies Express 5.x requirement of >= 18 | Verified via npm view |
 
-**Search Patterns Employed:**
+### 0.2.3 New File Requirements
 
-| Pattern | Files Found | Documentation Status |
-|---------|-------------|---------------------|
-| `README*` | `README.md` | Exists but minimal (2 lines) |
-| `docs/**` | None | Not present |
-| `*.md` | `README.md` | Single file, incomplete |
-| `*.rst` | None | Not present |
-| `wiki/**` | None | Not present |
-| `jsdoc.json` | None | Not present |
-| `*.jsdoc` | None | Not present |
+Given the minimal scope of this feature (adding one dependency and one endpoint to an existing single-file server), no new source files need to be created. All changes are modifications to existing files:
 
-**Current Documentation Infrastructure:**
-- Documentation framework: None configured
-- Documentation generator: None installed
-- API documentation tools: None in use
-- Diagram tools: None detected
-- Documentation hosting: Not configured
+- **No new source files**: The Express.js integration and new endpoint will be implemented directly in the existing `server.js`
+- **No new test files**: The project currently has no test framework; adding tests is outside the scope of this feature request
+- **No new configuration files**: Express.js configuration will be handled inline within `server.js`, consistent with the project's minimal architecture
+- **No new documentation files**: Updates to the existing `README.md` are sufficient to document the new endpoint
 
-**Existing Documentation Content (README.md):**
 
-```
-# hao-backprop-test
+## 0.3 Dependency Inventory
 
-test project for backprop integration. Do not touch!
-```
+### 0.3.1 Private and Public Packages
 
-**Assessment:** The current README provides only a project title and a brief warning note. It lacks all standard documentation sections including installation, usage, API reference, and deployment guidance.
+The project currently has zero external dependencies. This feature introduces Express.js as the first and only production dependency.
 
-### 0.2.2 Repository Code Analysis for Documentation
+| Registry | Package Name | Version | Purpose | Node.js Requirement |
+|----------|-------------|---------|---------|-------------------|
+| npm (public) | `express` | `5.2.1` | Web framework for HTTP routing and middleware; replaces raw `http.createServer()` | `>= 18` |
 
-**Search Patterns Used for Code to Document:**
+**Version Justification:**
+- Express.js `5.2.1` is the current latest stable version on npm as of February 2026, verified via `npm view express version`
+- Express 5.x became the default `latest` tag on npm in March 2025 (Express 5.1.0 release)
+- The project's Node.js runtime (v20.x) satisfies Express 5.x's minimum requirement of Node.js >= 18
+- No user-specified version constraint was provided, so the latest stable release is used per npm default behavior
 
-| Pattern | Target | Files Found |
-|---------|--------|-------------|
-| `server.js` | Main application entry | 1 file (15 lines) |
-| `*.js` | JavaScript source files | 1 file |
-| `package.json` | NPM configuration | 1 file |
-| `package-lock.json` | Dependency lock | 1 file |
+**Existing Built-in Dependencies (unchanged):**
 
-**Key Directories Examined:**
-- Root directory (`/`) - Contains all project files
-- No subdirectories exist
+| Module | Type | Current Usage | Post-Migration Usage |
+|--------|------|---------------|---------------------|
+| `http` | Node.js built-in | Server creation (`server.js:14`) | **Removed** — Express.js internally manages HTTP server creation |
 
-**Code Components Requiring Documentation:**
+### 0.3.2 Dependency Updates
 
-| File | Component | Type | Current Docs | Needed |
-|------|-----------|------|--------------|--------|
-| `server.js:1` | `http` require | Import | None | JSDoc @requires |
-| `server.js:3` | `hostname` | Constant | None | JSDoc @constant |
-| `server.js:4` | `port` | Constant | None | JSDoc @constant |
-| `server.js:6-10` | Request handler | Callback | None | JSDoc @callback |
-| `server.js:6` | `http.createServer()` | Function call | None | Inline comment |
-| `server.js:12-14` | `server.listen()` | Method call | None | JSDoc @example |
+#### Import Updates
 
-**Code Structure Analysis:**
+The following import transformation will be applied in `server.js`:
 
-```mermaid
-graph TB
-    A[server.js] --> B[http module]
-    A --> C[Configuration Constants]
-    C --> D[hostname: 127.0.0.1]
-    C --> E[port: 3000]
-    A --> F[HTTP Server]
-    F --> G[Request Handler Callback]
-    G --> H[Set Status 200]
-    G --> I[Set Content-Type]
-    G --> J[Send Response]
-    F --> K[Listen on port]
-    K --> L[Console Log URL]
-```
-
-### 0.2.3 Web Search Research Conducted
-
-**Research Areas Investigated:**
-
-| Topic | Purpose | Key Findings |
-|-------|---------|--------------|
-| JSDoc best practices Node.js | Code documentation standards | Use @module, @param, @returns, @example tags; Document CommonJS modules with @module tag |
-| Node.js README template | Project documentation structure | Include sections: Description, Installation, Usage, API, Deployment, License |
-| HTTP server documentation | API documentation patterns | Document endpoints, request/response formats, status codes |
-
-**Best Practices Identified:**
+| File | Current Import | New Import | Reason |
+|------|---------------|------------|--------|
+| `server.js` | `const http = require('http');` | `const express = require('express');` | Express.js replaces raw `http` module for server creation |
 
-- **JSDoc Standards:** Use structured block comments starting with `/**`, include @description for function purpose, @param for parameters with types, @returns for return values
-- **README Structure:** Follow common pattern with badges, description, TOC, installation, usage, API reference, contributing, and license sections
-- **Node.js Conventions:** Document CommonJS modules using @module tag, use @requires for dependencies, include @example for usage demonstrations
-
-## 0.3 Documentation Scope Analysis
-
-### 0.3.1 Code-to-Documentation Mapping
-
-**Modules Requiring Documentation:**
-
-**Module: server.js (Primary Application)**
-| Element | Line | Public/Private | Current Doc | Documentation Needed |
-|---------|------|----------------|-------------|---------------------|
-| Module declaration | 1-15 | Public | None | @fileoverview, @module, @author |
-| `http` import | 1 | Public | None | @requires with description |
-| `hostname` constant | 3 | Public | None | @constant with @type and @default |
-| `port` constant | 4 | Public | None | @constant with @type and @default |
-| Request handler callback | 6-10 | Public | None | @callback with @param for req, res |
-| Server instance | 6 | Public | None | @type annotation |
-| `server.listen()` call | 12-14 | Public | None | @example with usage |
-| Console log callback | 13 | Private | None | Inline comment |
-
-**Configuration Options Requiring Documentation:**
-
-| Config | File Location | Documented | Missing Documentation |
-|--------|--------------|------------|----------------------|
-| Server hostname | `server.js:3` | No | Default value, environment override potential |
-| Server port | `server.js:4` | No | Default value, environment override potential |
-| Response content | `server.js:9` | No | Response format, customization options |
-
-**Features Requiring User Guides:**
-
-| Feature | Current Coverage | Gaps |
-|---------|------------------|------|
-| HTTP Server | None | Overview, start/stop, request handling |
-| Hello World Endpoint | None | URL, method, response format |
-| Configuration | None | How to modify host/port |
-
-### 0.3.2 Documentation Gap Analysis
-
-Given the requirements and repository analysis, documentation gaps include:
-
-**Undocumented Public APIs:**
-
-| Component | Gap Type | Impact |
-|-----------|----------|--------|
-| HTTP endpoint (GET /) | Complete absence | Users don't know how to interact with server |
-| Response format | No specification | Response structure undocumented |
-| Status codes | Not listed | No error handling documentation |
-
-**Missing User Guides:**
-
-| Guide Topic | Current State | Required Content |
-|-------------|---------------|------------------|
-| Installation | Not present | Prerequisites, npm install, verification |
-| Quick Start | Not present | Basic usage to run server |
-| Configuration | Not present | Environment variables, customization |
-| Troubleshooting | Not present | Common issues and solutions |
-
-**Incomplete Architecture Documentation:**
-
-| Area | Status | Needed |
-|------|--------|--------|
-| System overview | Missing | High-level architecture diagram |
-| Request flow | Missing | Request/response lifecycle |
-| Module structure | Missing | File/module relationship |
-
-**Outdated Documentation:**
-
-| File | Issue | Required Update |
-|------|-------|-----------------|
-| `README.md` | Contains only warning text | Complete rewrite with all sections |
-
-### 0.3.3 Documentation Comprehensiveness Matrix
-
-```mermaid
-pie title Documentation Coverage Status
-    "Documented (0%)" : 0
-    "Undocumented Code (100%)" : 100
-```
-
-**Current vs. Target Documentation:**
-
-| Documentation Area | Current State | Target State | Gap |
-|-------------------|---------------|--------------|-----|
-| JSDoc in server.js | 0 blocks | 6+ blocks | Full creation needed |
-| README sections | 1 section | 10+ sections | 9 sections to add |
-| API documentation | 0 endpoints | 1 endpoint | Full creation needed |
-| Setup instructions | 0 steps | 5+ steps | Full creation needed |
-| Deployment guide | 0 sections | 3+ sections | Full creation needed |
-| Inline comments | 0 comments | 5+ comments | Full creation needed |
-
-## 0.4 Documentation Implementation Design
-
-### 0.4.1 Documentation Structure Planning
-
-**Proposed Documentation Hierarchy:**
-
-```
-Project Root/
-├── README.md (comprehensive documentation)
-│   ├── Project Title & Badges
-│   ├── Description
-│   ├── Table of Contents
-│   ├── Prerequisites
-│   ├── Installation
-│   ├── Usage / Quick Start
-│   ├── API Documentation
-│   │   └── GET / endpoint
-│   ├── Configuration
-│   ├── Deployment Guide
-│   │   ├── Production Considerations
-│   │   ├── Process Management
-│   │   └── Monitoring
-│   ├── Project Structure
-│   ├── Contributing
-│   └── License
-│
-├── server.js (with JSDoc comments)
-│   ├── @fileoverview block
-│   ├── @module declaration
-│   ├── @constant hostname
-│   ├── @constant port
-│   ├── Server creation with inline comments
-│   ├── @callback requestHandler
-│   └── Server listen with @example
-│
-├── package.json (referenced, not modified)
-└── package-lock.json (referenced, not modified)
-```
-
-### 0.4.2 Content Generation Strategy
-
-**Information Extraction Approach:**
-
-| Source | Extraction Method | Target Documentation |
-|--------|-------------------|---------------------|
-| `server.js:3-4` | Extract constant values | Configuration section in README |
-| `server.js:6-10` | Analyze request handler | API endpoint documentation |
-| `server.js:12-14` | Parse listen parameters | Usage/Quick Start section |
-| `package.json` | Extract metadata | README header, prerequisites |
-| `package-lock.json` | Extract Node version info | Prerequisites section |
-
-**JSDoc Comment Structure for server.js:**
-
-```javascript
-/**
- * @fileoverview Simple HTTP server...
- * @module server
- * @requires http
- */
-```
-
-**README Section Templates:**
-
-| Section | Content Source | Format |
-|---------|----------------|--------|
-| Prerequisites | package.json, runtime analysis | Bulleted list |
-| Installation | npm commands | Code blocks |
-| Usage | server.js analysis | Code examples + output |
-| API | Request handler analysis | Table + code examples |
-| Configuration | Constant analysis | Table with descriptions |
-| Deployment | Best practices research | Numbered steps |
-
-### 0.4.3 Documentation Standards
-
-**Markdown Formatting Standards:**
-- Headers: Use `#` hierarchy (H1 for title, H2 for main sections, H3 for subsections)
-- Code blocks: Use triple backticks with language identifier (```bash, ```javascript)
-- Tables: Use pipe-delimited format for structured data
-- Links: Use reference-style links for repeated URLs
-
-**JSDoc Standards:**
-- Block comments: Start with `/**` and end with `*/`
-- Tags: Use standard JSDoc tags (@param, @returns, @example, @constant, @type)
-- Types: Specify JavaScript types in curly braces ({string}, {number}, {Object})
-- Descriptions: Start with capital letter, use complete sentences
-
-**Code Example Standards:**
-- Include working, copy-paste ready examples
-- Show expected output where applicable
-- Use consistent indentation (2 spaces)
-
-### 0.4.4 Diagram and Visual Strategy
-
-**Mermaid Diagrams to Create:**
-
-| Diagram Type | Purpose | Location |
-|--------------|---------|----------|
-| Flowchart | Request/Response lifecycle | README - API section |
-| Sequence Diagram | Server startup flow | README - Usage section |
-
-**Request Flow Diagram (to be included in README):**
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant S as Server (localhost:3000)
-    
-    C->>S: HTTP GET /
-    S->>S: Set statusCode = 200
-    S->>S: Set Content-Type: text/plain
-    S-->>C: Response: "Hello, World!\n"
-```
-
-**Server Lifecycle Diagram:**
+#### Package Manifest Updates
+
+**`package.json` changes:**
+
+| Field | Current Value | New Value | Purpose |
+|-------|--------------|-----------|---------|
+| `dependencies` | *(absent)* | `{ "express": "^5.2.1" }` | Declares Express.js as a production dependency |
+| `scripts.start` | *(absent)* | `"node server.js"` | Adds a conventional npm start script |
+| `description` | `"Hello world in Node.js"` | Updated to reflect Express.js usage | Accurate project description |
+
+**`package-lock.json` regeneration:**
+- The lockfile will be automatically regenerated by running `npm install express`
+- It will grow from 13 lines (root-only) to include Express.js and its full transitive dependency tree
+- Lockfile version remains `3` (compatible with npm 7+)
+
+#### External Reference Updates
+
+| File | Section to Update | Change Description |
+|------|-------------------|-------------------|
+| `README.md` | Prerequisites table | Add Express.js version requirement |
+| `README.md` | Installation section | Remove note about "no external dependencies" |
+| `README.md` | API Documentation table | Add new `/evening` endpoint row |
+| `README.md` | Project Structure | Update file descriptions to reference Express.js |
+| `README.md` | Deployment Guide | Update ecosystem config if applicable |
+
+
+## 0.4 Integration Analysis
+
+### 0.4.1 Existing Code Touchpoints
+
+The Express.js integration requires modifications at every functional layer of `server.js`. Because the project is a single-file application, all touchpoints are concentrated in this one file.
+
+#### Direct Modifications Required
+
+| File | Location | Current Code | Required Change |
+|------|----------|-------------|-----------------|
+| `server.js` | Line 14 | `const http = require('http');` | Replace with `const express = require('express');` |
+| `server.js` | Lines 1-11 | JSDoc `@fileoverview` and `@requires http` | Update to reference Express.js instead of raw `http` module |
+| `server.js` | Lines 21-28 | Configuration constants (`hostname`, `port`) | Retain as-is; these constants feed into `app.listen()` |
+| `server.js` | Lines 39-48 | `http.createServer((req, res) => { ... })` | Replace with `const app = express();` and individual `app.get()` route registrations |
+| `server.js` | Lines 63-66 | `server.listen(port, hostname, () => { ... })` | Replace with `app.listen(port, hostname, () => { ... })` |
+
+#### Integration Flow Transformation
 
 ```mermaid
 flowchart LR
-    A[Start] --> B[Load http module]
-    B --> C[Define hostname & port]
-    C --> D[Create HTTP Server]
-    D --> E[Attach Request Handler]
-    E --> F[Listen on port 3000]
-    F --> G[Log server URL]
-    G --> H[Ready for Requests]
+    subgraph Before["Current: Raw http Module"]
+        A1[require http] --> A2[createServer callback]
+        A2 --> A3[Single monolithic handler]
+        A3 --> A4[server.listen]
+    end
+
+    subgraph After["Target: Express.js"]
+        B1[require express] --> B2[express app instance]
+        B2 --> B3["app.get '/' handler"]
+        B2 --> B4["app.get '/evening' handler"]
+        B3 --> B5[app.listen]
+        B4 --> B5
+    end
 ```
 
-### 0.4.5 Citation Requirements
+### 0.4.2 Dependency Injection Points
 
-All documentation will include source citations:
+| Component | Current Wiring | New Wiring |
+|-----------|---------------|------------|
+| HTTP Server Factory | `http.createServer(callback)` at `server.js:39` | `express()` application constructor |
+| Route Registration | Implicit — all requests hit one callback | Explicit — `app.get('/', handler)` and `app.get('/evening', handler)` |
+| Response API | `res.statusCode`, `res.setHeader()`, `res.end()` | `res.send()` Express response method (auto-sets Content-Type and status) |
+| Server Binding | `server.listen(port, hostname, cb)` | `app.listen(port, hostname, cb)` — Express wraps `http.Server.listen()` internally |
 
-| Documentation Element | Citation Format |
-|-----------------------|-----------------|
-| Code examples | `Source: server.js:line_number` |
-| Configuration values | `Default: value (from server.js)` |
-| Package metadata | `From: package.json` |
-| Technical claims | Inline reference to source file |
+### 0.4.3 Database/Schema Updates
 
-## 0.5 Documentation File Transformation Mapping
+- **Not applicable** — This project has no database, no persistent storage, and no schema. The feature addition is purely an HTTP routing change with no data layer impact.
 
-### 0.5.1 File-by-File Documentation Plan
+### 0.4.4 Middleware and Cross-Cutting Concerns
 
-**Complete Documentation Transformation Map:**
+| Concern | Impact | Decision |
+|---------|--------|----------|
+| Error handling | Express 5.x automatically catches rejected promises in route handlers | No custom error middleware needed for this simple feature |
+| Content-Type headers | Express `res.send()` auto-detects Content-Type for string responses as `text/html` | Explicitly use `res.type('text').send()` or `res.set('Content-Type', 'text/plain').send()` to preserve `text/plain` behavior matching the original server |
+| Request logging | Not currently implemented | Out of scope; no middleware additions required |
+| CORS | Not currently implemented | Out of scope; no middleware additions required |
 
-| Target Documentation File | Transformation | Source Code/Docs | Content/Changes |
-|---------------------------|----------------|------------------|-----------------|
-| `server.js` | UPDATE | `server.js` | Add JSDoc comments to module, constants, functions; add inline code explanations |
-| `README.md` | UPDATE | `README.md`, `server.js`, `package.json` | Complete rewrite with: project overview, badges, TOC, prerequisites, installation, usage, API docs, configuration, deployment guide, project structure, contributing, license |
 
-### 0.5.2 New Documentation Content Details
+## 0.5 Technical Implementation
 
-**File: server.js - JSDoc Comments Addition**
+### 0.5.1 File-by-File Execution Plan
 
-| Line(s) | Current State | JSDoc Addition |
-|---------|---------------|----------------|
-| 1 (before) | None | `@fileoverview`, `@module server`, `@author`, `@version`, `@requires http` |
-| 3 | `const hostname = '127.0.0.1';` | `@constant {string} hostname - Server bind address` |
-| 4 | `const port = 3000;` | `@constant {number} port - Server listening port` |
-| 6-10 | `http.createServer((req, res) => {...})` | `@callback requestHandler`, `@param {http.IncomingMessage} req`, `@param {http.ServerResponse} res` |
-| 7 | `res.statusCode = 200;` | Inline comment: `// Set HTTP success status` |
-| 8 | `res.setHeader(...)` | Inline comment: `// Set response content type` |
-| 9 | `res.end(...)` | Inline comment: `// Send response body and end` |
-| 12-14 | `server.listen(...)` | `@example` with usage demonstration |
+Every file listed below **must** be created or modified as part of this feature implementation.
 
-**Expected JSDoc Structure for server.js:**
+**Group 1 — Core Application (Express.js Migration + New Endpoint):**
 
-```
-File: server.js
-Type: Source Code with JSDoc
-Components to Document:
-  - File-level: @fileoverview (purpose and overview)
-  - Module: @module server declaration  
-  - Imports: @requires http (Node.js built-in)
-  - Constants: hostname (@constant, @type, @default)
-  - Constants: port (@constant, @type, @default)
-  - Callback: requestHandler (@callback, @param req, @param res)
-  - Inline: 3 explanatory comments for response logic
-Key Citations: package.json (version), http module docs
-```
+| Action | File | Purpose |
+|--------|------|---------|
+| **MODIFY** | `server.js` | Replace raw `http` module with Express.js application; register `GET /` route preserving "Hello, World!\n" response; register new `GET /evening` route returning "Good evening"; update JSDoc annotations to reference Express.js; retain `hostname` and `port` configuration constants; bind via `app.listen()` |
 
-### 0.5.3 Documentation Files to Update Details
+**Group 2 — Dependency Management:**
 
-**README.md - Complete Restructure:**
+| Action | File | Purpose |
+|--------|------|---------|
+| **MODIFY** | `package.json` | Add `express` to `dependencies` with version `^5.2.1`; add `start` script (`node server.js`); update `description` field |
+| **REGENERATE** | `package-lock.json` | Automatically regenerated by `npm install express` to include Express.js and its transitive dependency tree |
 
-| Section | New Content | Source |
-|---------|-------------|--------|
-| Title | `# Hello World Node.js Server` | `package.json:name` |
-| Badges | License badge, Node.js version | `package.json:license`, runtime |
-| Description | "A simple HTTP server that responds with 'Hello, World!'" | `server.js:9`, `package.json:description` |
-| Table of Contents | Auto-generated section links | All sections |
-| Prerequisites | Node.js v14.0.0 or higher, npm | Runtime requirements |
-| Installation | `git clone`, `cd`, `npm install` | Standard commands |
-| Usage | `node server.js`, curl example, expected output | `server.js:12-14` |
-| API Reference | `GET /` endpoint with request/response details | `server.js:6-10` |
-| Configuration | hostname and port constants | `server.js:3-4` |
-| Deployment | Production considerations, PM2, environment config | Best practices |
-| Project Structure | File tree with descriptions | Repository analysis |
-| Contributing | Basic contribution guidelines | Standard template |
-| License | MIT License notice | `package.json:license` |
+**Group 3 — Documentation:**
 
-**README.md Section Details:**
+| Action | File | Purpose |
+|--------|------|---------|
+| **MODIFY** | `README.md` | Update prerequisites to include Express.js; update API endpoint reference table with `/evening` endpoint; revise installation section to note Express.js dependency; update request flow diagram; update project structure section; update configuration section for Express.js context |
 
-```
-File: README.md
-Type: Project Documentation
-Current State: 2 lines (title + warning)
-Target State: 10+ sections, ~200 lines
-Sections:
-  - Header (title, badges, description)
-  - Table of Contents (linked navigation)
-  - Prerequisites (Node.js version, npm)
-  - Installation (clone, install steps)
-  - Usage (start server, test endpoint)
-  - API Documentation (endpoint reference table)
-  - Configuration (environment options)
-  - Deployment Guide (production, PM2, monitoring)
-  - Project Structure (file descriptions)
-  - Contributing (guidelines)
-  - License (MIT)
-Diagrams:
-  - Request flow sequence diagram
-  - Server architecture flowchart
-Key Citations: server.js, package.json
+### 0.5.2 Implementation Approach per File
+
+## server.js — Express.js Migration and New Endpoint
+
+The implementation establishes the Express.js foundation by transforming the server from a raw `http` module pattern to an Express.js application with explicit route definitions.
+
+- **Replace the import**: Swap `require('http')` with `require('express')`
+- **Create Express app**: Replace `http.createServer(callback)` with `const app = express()`
+- **Register the root route**: Add `app.get('/', (req, res) => { ... })` that sends `"Hello, World!\n"` with `Content-Type: text/plain` and HTTP 200 status, preserving exact backward compatibility with the original response
+- **Register the evening route**: Add `app.get('/evening', (req, res) => { ... })` that sends `"Good evening"` with `Content-Type: text/plain` and HTTP 200 status
+- **Bind the server**: Replace `server.listen()` with `app.listen(port, hostname, callback)` retaining the existing console log message
+- **Update JSDoc**: Revise `@fileoverview`, `@requires`, and `@module` tags to reference Express.js; add JSDoc for each route handler
+
+The resulting `server.js` structure:
+
+```javascript
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => { /* Hello World */ });
 ```
 
-### 0.5.4 Cross-Documentation Dependencies
+## package.json — Dependency Declaration
 
-**Internal References:**
+- Add `"express": "^5.2.1"` under a new `dependencies` object
+- Add `"start": "node server.js"` under `scripts` for conventional npm startup
+- Update `description` to reflect Express.js usage
 
-| From Document | To Document | Reference Type |
-|---------------|-------------|----------------|
-| README.md | server.js | Code examples, configuration values |
-| README.md | package.json | Project metadata, license |
-| server.js JSDoc | README.md | Cross-reference for detailed docs |
+## package-lock.json — Lockfile Regeneration
 
-**Navigation Structure:**
+- Automatically handled by running `npm install express` in the project root
+- No manual edits; npm generates the deterministic lockfile
 
-| README Section | Links To |
-|----------------|----------|
-| Table of Contents | All major sections |
-| Prerequisites | Node.js download page (external) |
-| API Reference | server.js source (internal) |
-| License | LICENSE file or package.json |
+## README.md — Documentation Updates
 
-### 0.5.5 Comprehensive File List
+- **Prerequisites section**: Add Express.js 5.x to the requirements table
+- **Installation section**: Remove the note stating "This project has no external dependencies" and confirm `npm install` installs Express.js
+- **API Documentation section**: Add a new row for `GET /evening` in the endpoint reference table; add request/response details for the new endpoint
+- **Request Flow Diagram**: Update the Mermaid sequence diagram to show both endpoints with Express routing
+- **Configuration section**: Note that Express.js is now the server framework
+- **Project Structure section**: Update file descriptions to mention Express.js
+- **Deployment Guide section**: Update PM2 ecosystem config examples if affected
 
-**All Documentation Files In Scope:**
+### 0.5.3 User Interface Design
 
-| File Path | Action | Priority | Estimated Changes |
-|-----------|--------|----------|-------------------|
-| `server.js` | UPDATE (add JSDoc + inline comments) | High | +25-30 lines of comments |
-| `README.md` | UPDATE (complete rewrite) | High | ~200 lines (from 2 lines) |
+Not applicable — this project is a headless HTTP server with no user interface. No Figma screens or UI designs were provided.
 
-**Files Referenced But Not Modified:**
 
-| File Path | Reference Purpose |
-|-----------|-------------------|
-| `package.json` | Extract project metadata for README |
-| `package-lock.json` | Verify lockfile version for docs |
+## 0.6 Scope Boundaries
 
-## 0.6 Dependency Inventory
+### 0.6.1 Exhaustively In Scope
 
-### 0.6.1 Documentation Dependencies
+All files and changes required for this feature are enumerated below. This is the complete and exhaustive boundary of the implementation.
 
-**Project Dependencies Analysis:**
+**Application Source:**
 
-The project currently has **no external dependencies**. All functionality relies on Node.js built-in modules.
+| Pattern / Path | Scope Detail |
+|---------------|--------------|
+| `server.js` | Full rewrite: Express.js import, app instantiation, `GET /` route (Hello World), `GET /evening` route (Good evening), `app.listen()` binding, JSDoc updates |
 
-**Built-in Module Dependencies:**
+**Dependency Management:**
 
-| Module | Source | Purpose | Documentation Reference |
-|--------|--------|---------|------------------------|
-| `http` | Node.js core | HTTP server creation | [Node.js HTTP Documentation](https://nodejs.org/api/http.html) |
+| Pattern / Path | Scope Detail |
+|---------------|--------------|
+| `package.json` | Add `express` dependency (`^5.2.1`), add `start` script, update `description` |
+| `package-lock.json` | Regenerate via `npm install express` — includes Express.js and all transitive dependencies |
 
-**Runtime Requirements:**
+**Documentation:**
 
-| Runtime | Minimum Version | Recommended | Source |
-|---------|-----------------|-------------|--------|
-| Node.js | 14.0.0 | 20.x LTS | `package-lock.json:lockfileVersion:3` (requires Node 16+) |
-| npm | 6.0.0 | 10.x | Bundled with Node.js |
+| Pattern / Path | Scope Detail |
+|---------------|--------------|
+| `README.md` | Update prerequisites table, installation section, API endpoint table (add `GET /evening`), request/response details, Mermaid sequence diagram, configuration section, project structure section |
 
-**Note:** The `lockfileVersion: 3` in `package-lock.json` indicates compatibility with npm 7+ which requires Node.js 10.0.0+, but for modern best practices and security, Node.js 14+ is recommended.
+**Integration Points:**
 
-### 0.6.2 Documentation Tool Recommendations
+| Integration Point | File | Lines/Section Affected |
+|-------------------|------|----------------------|
+| Route registration for `GET /` | `server.js` | New Express route handler replacing lines 39-48 |
+| Route registration for `GET /evening` | `server.js` | Net-new Express route handler |
+| Server binding | `server.js` | `app.listen()` replacing lines 63-66 |
+| Dependency declaration | `package.json` | New `dependencies` field |
+| Endpoint documentation | `README.md` | API Documentation section (~lines 116-168) |
 
-Since no documentation tools are currently installed, the following are recommended for enhancing documentation workflow:
+### 0.6.2 Explicitly Out of Scope
 
-| Registry | Package Name | Version | Purpose |
-|----------|--------------|---------|---------|
-| npm | jsdoc | 4.0.4 | Generate HTML documentation from JSDoc comments |
-| npm | docdash | 2.0.2 | Clean JSDoc template theme |
-| npm | jsdoc-to-markdown | 9.0.5 | Generate Markdown API docs from JSDoc |
-| npm | markdown-toc | 1.2.0 | Auto-generate table of contents for README |
+The following items are **not** part of this feature implementation:
 
-**Optional Development Dependencies (for documentation generation):**
+| Excluded Item | Rationale |
+|--------------|-----------|
+| Adding a test framework (Jest, Mocha, etc.) | User did not request tests; the existing project has no test infrastructure |
+| Adding middleware (CORS, body-parser, logging) | User only requested Express.js and a new endpoint; no middleware was specified |
+| TypeScript migration | Project uses plain JavaScript (CommonJS); no TypeScript conversion was requested |
+| ES Modules migration | Project uses `require()` (CommonJS); no module system change was requested |
+| Environment variable configuration | User did not request `.env` file or `dotenv` integration; hardcoded constants are retained |
+| Docker or CI/CD pipeline changes | No containerization or pipeline files exist; none were requested |
+| Additional endpoints beyond `/evening` | Only one new endpoint was requested |
+| Error handling middleware | The two routes are simple static responses; custom error handling is unnecessary |
+| Performance optimization | Out of scope; not requested |
+| Refactoring of `blitzy/` documentation files | These are historical documentation artifacts unrelated to the runtime server |
+| Database or persistent storage integration | No data layer exists or was requested |
+| Authentication or authorization | No security layer was requested |
 
-```json
-{
-  "devDependencies": {
-    "jsdoc": "^4.0.4"
-  },
-  "scripts": {
-    "docs": "jsdoc server.js -d docs/"
-  }
-}
-```
 
-### 0.6.3 Documentation Reference Updates
+## 0.7 Rules for Feature Addition
 
-**No documentation link updates required** - this is a new documentation effort with no existing internal links to maintain.
+### 0.7.1 Feature-Specific Rules and Requirements
 
-**External References to Include in README:**
+The following rules govern the implementation of this feature, derived from the user's request and the existing project conventions:
 
-| Reference | URL | Context |
-|-----------|-----|---------|
-| Node.js | https://nodejs.org/ | Prerequisites section |
-| Node.js HTTP API | https://nodejs.org/api/http.html | API Reference section |
-| npm | https://www.npmjs.com/ | Installation section |
+**Behavioral Compatibility:**
 
-### 0.6.4 Version Compatibility Notes
+- The `GET /` endpoint **must** return the exact response body `"Hello, World!\n"` with HTTP status `200` and `Content-Type: text/plain` — preserving identical behavior to the current raw `http` implementation
+- The new `GET /evening` endpoint **must** return the response body `"Good evening"` with HTTP status `200` and `Content-Type: text/plain`
+- The server **must** continue to bind to `hostname = '127.0.0.1'` and `port = 3000` by default
 
-**Documentation Version Alignment:**
+**Code Style Conventions (matching existing patterns in `server.js`):**
 
-| Component | Current Version | Documentation Target |
-|-----------|-----------------|---------------------|
-| Project | 1.0.0 | README version badge |
-| Node.js API | http (stable) | Node.js LTS documentation |
-| npm lockfile | v3 | Document npm 7+ requirement |
+- Use CommonJS module syntax (`require()` / `module.exports`)
+- Use `const` for all variable declarations
+- Use arrow functions for callbacks
+- Use template literals for string interpolation
+- Use 2-space indentation
+- Include comprehensive JSDoc annotations (`@fileoverview`, `@module`, `@requires`, `@constant`, `@example`)
+- Include inline comments explaining each significant operation
 
-**Version Constraints for Documentation:**
+**Dependency Management:**
 
-- JSDoc comments will use standard tags compatible with JSDoc 3.x and 4.x
-- README Markdown syntax compatible with GitHub Flavored Markdown
-- Mermaid diagrams use syntax compatible with GitHub rendering
+- Use `npm` as the package manager (per user setup instructions)
+- Install Express.js via `npm install express` (no manual `package.json` edits for version)
+- The `^` semver range prefix in `package.json` allows compatible minor/patch updates
 
-## 0.7 Coverage and Quality Targets
+**Documentation Standards:**
 
-### 0.7.1 Documentation Coverage Metrics
+- All endpoint documentation in `README.md` must include method, path, description, status code, and content-type
+- Mermaid diagrams must be updated to reflect the new routing architecture
+- Installation instructions must accurately reflect the dependency installation step
 
-**Current Coverage Analysis:**
 
-| Documentation Category | Current | Target | Gap |
-|-----------------------|---------|--------|-----|
-| Public APIs documented | 0/4 (0%) | 4/4 (100%) | 4 items |
-| Constants documented | 0/2 (0%) | 2/2 (100%) | 2 items |
-| README sections | 1/11 (9%) | 11/11 (100%) | 10 sections |
-| Inline code comments | 0/5 (0%) | 5/5 (100%) | 5 comments |
+## 0.8 References
 
-**Target Coverage: 100%** based on user requirement for "comprehensive" documentation
+### 0.8.1 Repository Files and Folders Searched
 
-**Coverage Gaps to Address:**
+The following files and folders were comprehensively inspected to derive the conclusions in this Agent Action Plan:
 
-| Component | Current State | Target State | Action |
-|-----------|---------------|--------------|--------|
-| server.js JSDoc | 0% documented | 100% documented | Add 6 JSDoc blocks |
-| server.js inline | 0% commented | Key lines commented | Add 5 inline comments |
-| README.md | 9% complete | 100% complete | Add 10 sections |
+| Path | Type | Purpose of Inspection |
+|------|------|----------------------|
+| ` ` (root) | Folder | Identify all project files, folder structure, and project summary |
+| `server.js` | File | Analyze current HTTP server implementation, code patterns, JSDoc style, and integration points (67 lines, fully read) |
+| `package.json` | File | Identify current dependencies (none), project metadata, scripts, and npm configuration (10 lines, fully read) |
+| `package-lock.json` | File | Verify current lockfile state and dependency footprint (13 lines, fully read) |
+| `README.md` | File | Assess existing documentation structure, endpoint documentation, prerequisites, and deployment guide (412 lines, fully read) |
+| `blitzy/` | Folder | Inspect documentation artifacts folder and assess relevance to feature changes |
+| `blitzy/documentation/` | Folder | Review contents for any runtime-relevant configuration or constraints |
 
-### 0.7.2 Documentation Quality Criteria
+### 0.8.2 Technical Specification Sections Consulted
 
-**Completeness Requirements:**
+| Section | Purpose of Consultation |
+|---------|------------------------|
+| 1.1 Executive Summary | Understand project purpose, stakeholders, and value proposition |
+| 2.2 Feature Catalog | Review existing feature definitions (F-001, F-002, F-003) for integration understanding |
+| 3.2 Programming Languages | Confirm JavaScript/ES6+ usage, CommonJS module system, and code patterns |
+| 3.3 Frameworks & Libraries | Understand the intentional zero-framework decision being changed by this feature |
+| 5.2 Component Details | Analyze Configuration Module, Request Handler, and Server Instance component architecture |
+| Node.js Version Requirements | Verify Node.js and npm version constraints for Express.js compatibility |
 
-| Documentation Type | Required Elements | Verification |
-|-------------------|-------------------|--------------|
-| JSDoc - Module | @fileoverview, @module, @author, @requires | All tags present |
-| JSDoc - Constants | @constant, @type, @default, description | Type and default documented |
-| JSDoc - Callbacks | @callback, @param (with types), description | All parameters documented |
-| README - Section | Heading, content, code examples | Each section self-contained |
-| README - API | Method, URL, response, examples | Complete endpoint specification |
+### 0.8.3 External Research Conducted
 
-**Accuracy Validation Requirements:**
-
-| Validation Check | Method | Pass Criteria |
-|------------------|--------|---------------|
-| Code examples | Execute in Node.js | Examples run without error |
-| API documentation | Test with curl | Response matches documented format |
-| Configuration values | Compare to source | Defaults match server.js |
-| Package metadata | Compare to package.json | Versions and names accurate |
-
-**Clarity Standards:**
-
-| Standard | Requirement | Example |
-|----------|-------------|---------|
-| Language | Technical but accessible | "Starts an HTTP server" not "Instantiates server object" |
-| Structure | Progressive disclosure | Overview → Details → Examples |
-| Terminology | Consistent across docs | Use "server" consistently, not "app/server/instance" |
-| Examples | Working, copy-paste ready | Include all imports and setup |
-
-**Maintainability Standards:**
-
-| Aspect | Requirement |
-|--------|-------------|
-| Source citations | All technical details cite source file:line |
-| Version tracking | README includes version badge |
-| Update indicators | JSDoc @since tags where applicable |
-| Modular structure | Sections can be updated independently |
-
-### 0.7.3 Example and Diagram Requirements
-
-**Minimum Examples Required:**
-
-| Documentation Area | Example Count | Example Type |
-|-------------------|---------------|--------------|
-| Installation | 3 | Shell commands |
-| Usage | 2 | Shell + curl commands |
-| API endpoint | 2 | Request + Response |
-| Configuration | 1 | Code modification |
-| Deployment | 2 | PM2 + environment |
-
-**Diagram Requirements:**
-
-| Diagram | Type | Purpose | Location |
-|---------|------|---------|----------|
-| Request Flow | Sequence | Show HTTP request lifecycle | README - API section |
-| Server Architecture | Flowchart | Show startup process | README - Overview |
-
-**Code Example Verification:**
-
-All code examples will be verified by:
-1. Syntax highlighting compatibility check
-2. Copy-paste execution test
-3. Output comparison with documented output
-
-### 0.7.4 Quality Acceptance Criteria
-
-**Documentation Complete When:**
-
-- [ ] All JSDoc blocks pass `jsdoc` parsing without warnings
-- [ ] README contains all 11 required sections
-- [ ] All code examples are executable
-- [ ] API documentation matches actual server behavior
-- [ ] Mermaid diagrams render correctly in GitHub
-- [ ] All external links are valid
-- [ ] Terminology is consistent throughout
-- [ ] Source citations present for all technical claims
-
-## 0.8 Scope Boundaries
-
-### 0.8.1 Exhaustively In Scope
-
-**Documentation File Updates:**
-
-| File Pattern | Action | Description |
-|--------------|--------|-------------|
-| `README.md` | UPDATE | Complete rewrite with comprehensive documentation |
-| `server.js` | UPDATE | Add JSDoc comments and inline code explanations |
-
-**Documentation Content Creation:**
-
-| Content Type | Scope | Details |
-|--------------|-------|---------|
-| JSDoc blocks | `server.js` | File-level, constants, callbacks, examples |
-| Inline comments | `server.js` | Key code lines explaining logic |
-| README sections | `README.md` | All 11 sections as specified |
-| Code examples | `README.md` | Installation, usage, API, deployment |
-| Diagrams | `README.md` | Request flow, server architecture |
-
-**Specific Documentation Elements In Scope:**
-
-```
-server.js Documentation:
-├── @fileoverview block
-├── @module server declaration
-├── @requires http annotation
-├── @constant hostname with @type and @default
-├── @constant port with @type and @default  
-├── @callback requestHandler with @param tags
-├── Inline comment: status code explanation
-├── Inline comment: header setting explanation
-├── Inline comment: response ending explanation
-└── @example for server.listen usage
-
-README.md Sections:
-├── Project title and badges
-├── Description
-├── Table of Contents
-├── Prerequisites
-├── Installation
-├── Usage / Quick Start
-├── API Documentation
-├── Configuration
-├── Deployment Guide
-├── Project Structure
-├── Contributing
-└── License
-```
-
-### 0.8.2 Explicitly Out of Scope
-
-**Source Code Modifications (Beyond Comments):**
-
-| Exclusion | Reason |
-|-----------|--------|
-| Functional code changes to server.js | Documentation task only |
-| Adding new features or endpoints | Not requested |
-| Refactoring existing code logic | Not requested |
-| Adding error handling code | Not requested |
-| Modifying constants values | Not requested |
-
-**Configuration File Modifications:**
-
-| Exclusion | Reason |
-|-----------|--------|
-| package.json changes | No dependencies to add |
-| package-lock.json changes | No dependency changes |
-| New configuration files | Not required for documentation |
-
-**Additional Documentation Not Requested:**
-
-| Exclusion | Reason |
-|-----------|--------|
-| API documentation site (HTML) | JSDoc generation not explicitly requested |
-| Separate docs/ folder | Not in requirements |
-| CHANGELOG.md | Not requested |
-| CONTRIBUTING.md (separate file) | Will be section in README |
-| CODE_OF_CONDUCT.md | Not requested |
-| GitHub templates | Not requested |
-
-**Testing Modifications:**
-
-| Exclusion | Reason |
-|-----------|--------|
-| Test file updates | No test files exist; not requested |
-| Test documentation | No tests to document |
-
-**Deployment Artifacts:**
-
-| Exclusion | Reason |
-|-----------|--------|
-| Docker configuration | Not requested |
-| CI/CD configuration | Not requested |
-| Kubernetes manifests | Not requested |
+| Source | URL / Method | Information Retrieved |
+|--------|-------------|----------------------|
+| npm registry | `npm view express version` | Latest Express.js version: 5.2.1 |
+| npm registry | `npm view express@5.2.1 engines` | Node.js requirement: `>= 18` |
+| GitHub (expressjs/express) | Web search | Express 5.x release details, breaking changes, Node.js compatibility |
+| expressjs.com | Web search | Express 5.1.0 became default `latest` on npm (March 2025) |
+| npmjs.com/package/express | Web search | Express 5.2.1 is latest; 97,614 dependents in npm ecosystem |
 
-### 0.8.3 Boundary Clarifications
+### 0.8.4 Attachments and External Resources
 
-**Documentation-Only Changes:**
+- **No attachments were provided** for this project
+- **No Figma screens were provided** for this project
+- **No environment files were provided** in `/tmp/environments_files/`
 
-This documentation task will ONLY:
-- Add comment blocks (JSDoc and inline) to existing code
-- Rewrite the README.md file with comprehensive content
-- Reference but not modify package.json
-
-**No New Files Created:**
-
-The task scope does not include creating:
-- docs/ directory
-- Separate markdown files
-- Configuration files for documentation generators
-- Build scripts for documentation
-
-**Preservation Requirements:**
-
-| Element | Status |
-|---------|--------|
-| Existing code functionality | Preserved (comments only) |
-| package.json structure | Unchanged |
-| package-lock.json | Unchanged |
-| File structure | Unchanged (no new files) |
-
-## 0.9 Execution Parameters
-
-### 0.9.1 Documentation-Specific Instructions
-
-**Documentation Build Commands:**
-
-| Command | Purpose | Environment |
-|---------|---------|-------------|
-| N/A | No documentation generator installed | Current state |
-| `jsdoc server.js -d docs/` | Generate HTML docs (optional) | If jsdoc installed |
-
-**Documentation Preview Commands:**
-
-| Command | Purpose | Expected Output |
-|---------|---------|-----------------|
-| `cat README.md` | View README content | Rendered in terminal |
-| `node server.js` | Verify documented behavior | Server starts on :3000 |
-| `curl http://127.0.0.1:3000/` | Test documented endpoint | "Hello, World!" |
-
-**Documentation Validation Commands:**
-
-| Command | Purpose | Pass Criteria |
-|---------|---------|---------------|
-| `node --check server.js` | Verify syntax after adding comments | Exit code 0 |
-| `grep -c "@" server.js` | Count JSDoc tags | 10+ occurrences |
-
-### 0.9.2 Default Documentation Formats
-
-**Primary Formats:**
-
-| Documentation | Format | Rationale |
-|--------------|--------|-----------|
-| README | Markdown (GFM) | GitHub rendering, universal support |
-| Code comments | JSDoc | Industry standard for JavaScript |
-| Diagrams | Mermaid | Native GitHub markdown support |
-| Code examples | Fenced code blocks | Syntax highlighting support |
-
-**Markdown Standards:**
-
-- `# H1` - Project Title
-- `## H2` - Major Sections  
-- `### H3` - Subsections
-- Bullet lists (`-`) for features
-- Numbered lists (`1.`) for steps
-- Backticks for inline code
-- Fenced code blocks with language identifier
-
-**JSDoc Standards:**
-
-- Block starts with `/**` and ends with `*/`
-- `@description` - Brief description
-- `@param {Type} name` - Parameter description
-- `@returns {Type}` - Return description
-- `@example` - Usage example
-
-### 0.9.3 Citation Requirements
-
-**Source Citation Format:**
-
-| Content Type | Citation Format | Example |
-|--------------|-----------------|---------|
-| Code values | `(server.js:line)` | "Port 3000 (server.js:4)" |
-| Package info | `(package.json)` | "Version 1.0.0 (package.json)" |
-| Behavior | `(Source: file:line-range)` | "Source: server.js:6-10" |
-
-**Citation Placement:**
-
-- README: Inline or as comments in code blocks
-- JSDoc: @see tags for cross-references
-- Tables: Dedicated "Source" column where applicable
-
-### 0.9.4 Style Guide Reference
-
-**Documentation Style Compliance:**
-
-| Aspect | Standard | Source |
-|--------|----------|--------|
-| JSDoc syntax | JSDoc 3.x/4.x specification | jsdoc.app |
-| Markdown | GitHub Flavored Markdown | github.com/gfm |
-| Code style | Existing project conventions | server.js analysis |
-| Terminology | Node.js official terminology | nodejs.org/docs |
-
-**Consistency Rules:**
-
-| Term | Preferred Usage | Avoid |
-|------|-----------------|-------|
-| Server | "server" | app, application, instance |
-| Endpoint | "endpoint" | route, path, URL |
-| Request | "request" or "req" | incoming message |
-| Response | "response" or "res" | outgoing message |
-
-### 0.9.5 Working Directory and Paths
-
-**Repository Path:** `/tmp/blitzy/SK-30-JAN/bass2/`
-
-**File Locations:**
-
-| File | Absolute Path |
-|------|---------------|
-| server.js | `/tmp/blitzy/SK-30-JAN/bass2/server.js` |
-| README.md | `/tmp/blitzy/SK-30-JAN/bass2/README.md` |
-| package.json | `/tmp/blitzy/SK-30-JAN/bass2/package.json` |
-| package-lock.json | `/tmp/blitzy/SK-30-JAN/bass2/package-lock.json` |
-
-## 0.10 Rules for Documentation
-
-### 0.10.1 User-Specified Requirements
-
-Based on the user's request, the following documentation rules apply:
-
-| Rule # | Requirement | Implementation |
-|--------|-------------|----------------|
-| R1 | Add JSDoc comments to server.js functions | Document all functions, constants, and module with JSDoc blocks |
-| R2 | Create comprehensive README | Include all standard sections for a complete project README |
-| R3 | Include setup instructions | Document prerequisites, installation, and verification steps |
-| R4 | Include API documentation | Document the HTTP endpoint with request/response details |
-| R5 | Include deployment guide | Document production deployment considerations |
-| R6 | Include inline code explanations | Add contextual comments explaining code logic |
-
-### 0.10.2 Derived Documentation Standards
-
-**From "Comprehensive" Requirement:**
-
-- All public elements must have documentation
-- Documentation must be self-contained (no missing context)
-- Include working examples for all documented features
-- Cover edge cases and error scenarios where applicable
-
-**From "JSDoc comments" Requirement:**
-
-- Use standard JSDoc 3.x/4.x syntax
-- Include type annotations for all parameters
-- Provide descriptions for all documented elements
-- Use @example tags for usage demonstrations
-
-**From "Setup instructions" Requirement:**
-
-- List all prerequisites clearly
-- Provide step-by-step installation commands
-- Include verification steps
-- Document expected outcomes
-
-**From "API documentation" Requirement:**
-
-- Document HTTP method and endpoint URL
-- Specify request parameters (if any)
-- Document response format and content type
-- Include example request/response
-
-**From "Deployment guide" Requirement:**
-
-- Document production environment considerations
-- Include process management recommendations
-- Cover environment configuration
-- Address monitoring and logging
-
-**From "Inline code explanations" Requirement:**
-
-- Explain non-obvious code logic
-- Document the "why" not just the "what"
-- Keep comments concise and relevant
-- Place comments near the code they describe
-
-### 0.10.3 Quality Enforcement Rules
-
-| Rule | Enforcement Criteria |
-|------|---------------------|
-| Accuracy | All documented values must match source code |
-| Completeness | No @TODO or placeholder content |
-| Consistency | Uniform style across all documentation |
-| Testability | All code examples must be executable |
-| Maintainability | Source citations for future updates |
-
-### 0.10.4 Format Compliance Rules
-
-**JSDoc Format Rules:**
-
-- Every JSDoc block must start with `/**` on its own line
-- Tags must use `@` prefix followed by tag name
-- Type annotations must use curly braces: `{string}`, `{number}`
-- Parameter names must match actual code parameter names
-- @example content must be syntactically valid JavaScript
-
-**README Format Rules:**
-
-- Use GitHub Flavored Markdown syntax
-- Section headings must use appropriate heading levels (## for main, ### for sub)
-- Code blocks must specify language for syntax highlighting
-- Tables must have header row and alignment row
-- Links must use proper Markdown link syntax
-
-**Comment Format Rules:**
-
-- Inline comments must use `//` prefix
-- Comments must be on their own line or at end of code line
-- Comments must be grammatically correct
-- Comments must not exceed 80 characters where practical
-
-## 0.11 References
-
-### 0.11.1 Repository Files Analyzed
-
-**Files Retrieved and Examined:**
-
-| File | Path | Lines | Purpose in Analysis |
-|------|------|-------|---------------------|
-| server.js | `/tmp/blitzy/SK-30-JAN/bass2/server.js` | 15 | Primary documentation target; analyzed for JSDoc placement and inline comment locations |
-| README.md | `/tmp/blitzy/SK-30-JAN/bass2/README.md` | 2 | Current documentation state assessment; identified gaps |
-| package.json | `/tmp/blitzy/SK-30-JAN/bass2/package.json` | 11 | Project metadata extraction; version, license, author info |
-| package-lock.json | `/tmp/blitzy/SK-30-JAN/bass2/package-lock.json` | 14 | Lockfile version analysis; Node.js compatibility verification |
-
-**Folders Examined:**
-
-| Folder | Path | Contents | Finding |
-|--------|------|----------|---------|
-| Root | `/tmp/blitzy/SK-30-JAN/bass2/` | 4 files | Single-level project; no subdirectories; no docs folder |
-
-### 0.11.2 Search Operations Performed
-
-**Repository Search History:**
-
-| Search # | Tool | Target | Purpose | Result |
-|----------|------|--------|---------|--------|
-| 1 | bash find | `.blitzyignore` | Check for ignore patterns | None found |
-| 2 | get_source_folder_contents | Root folder | Repository structure analysis | 4 files identified |
-| 3 | read_file | server.js | Source code analysis | 15 lines retrieved |
-| 4 | read_file | README.md | Current documentation state | 2 lines retrieved |
-| 5 | read_file | package.json | Project metadata | 11 lines retrieved |
-| 6 | read_file | package-lock.json | Dependency analysis | 14 lines retrieved |
-| 7 | bash | Node.js version | Runtime verification | v20.20.0 confirmed |
-| 8 | bash | npm version | Package manager verification | 11.1.0 confirmed |
-| 9 | bash | Server test | Functionality verification | "Hello, World!" confirmed |
-
-### 0.11.3 Web Research Conducted
-
-**Web Searches Performed:**
-
-| Search Query | Purpose | Key Findings Applied |
-|--------------|---------|---------------------|
-| "JSDoc best practices Node.js 2024" | JSDoc documentation standards | @module tag for CommonJS, @param with types, @example usage |
-| "Node.js README best practices template 2024" | README structure guidance | Section order, content recommendations, badge usage |
-
-**External Documentation Referenced:**
-
-| Resource | URL | Content Used |
-|----------|-----|--------------|
-| JSDoc Official | jsdoc.app | Tag syntax and CommonJS module documentation |
-| Node.js HTTP Docs | nodejs.org/api/http.html | HTTP module API reference |
-| GitHub Flavored Markdown | github.github.com/gfm/ | Markdown syntax specification |
-| Mermaid Diagrams | mermaid.js.org | Diagram syntax for documentation |
-
-### 0.11.4 Attachments and External Resources
-
-**User-Provided Attachments:** None provided
-
-**User-Provided URLs:** None provided
-
-**User-Provided Setup Instructions:** None provided
-
-**Environment Configuration:**
-
-| Item | Value | Source |
-|------|-------|--------|
-| Working Directory | `/tmp/blitzy/SK-30-JAN/bass2/` | Repository location |
-| Node.js Version | v20.20.0 | System runtime |
-| npm Version | 11.1.0 | System package manager |
-
-### 0.11.5 Technical Specification Cross-References
-
-**Relevant Tech Spec Sections:**
-
-| Section | Relevance |
-|---------|-----------|
-| 3.2 Programming Languages | Node.js as runtime |
-| 3.3 Frameworks & Libraries | http built-in module |
-| 3.4 Open Source Dependencies | No external dependencies |
-| package.json Configuration | Project metadata source |
-
-### 0.11.6 Documentation Standards Referenced
-
-| Standard | Application |
-|----------|-------------|
-| JSDoc 3.x Specification | JSDoc comment syntax and tags |
-| GitHub Flavored Markdown | README formatting |
-| Node.js Documentation Style | Terminology and conventions |
-| Semantic Versioning | Version documentation (1.0.0) |
 
