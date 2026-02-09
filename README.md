@@ -1,9 +1,9 @@
 # Hello World Node.js Server
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 
-A simple HTTP server that responds with "Hello, World!" - a minimal Node.js application demonstrating the basics of creating an HTTP server using Node.js built-in modules.
+A simple Express.js HTTP server with two endpoints: a root endpoint returning "Hello, World!" and an evening endpoint returning "Good evening". Built with Express.js 5.x on Node.js.
 
 ## Table of Contents
 
@@ -23,8 +23,9 @@ Before running this application, ensure you have the following installed:
 
 | Requirement | Minimum Version | Recommended Version | Download |
 |-------------|-----------------|---------------------|----------|
-| Node.js | 14.0.0 | 20.x LTS | [nodejs.org](https://nodejs.org/) |
-| npm | 6.0.0 | 10.x | Bundled with Node.js |
+| Node.js | 18.0.0 | 20.x LTS | [nodejs.org](https://nodejs.org/) |
+| npm | 7.0.0 | 10.x | Bundled with Node.js |
+| Express.js | 5.0.0 | 5.2.x | Installed via npm |
 
 To verify your installations:
 
@@ -58,7 +59,7 @@ cd hello_world
 npm install
 ```
 
-> **Note:** This project has no external dependencies, so `npm install` will complete quickly.
+> **Note:** Running `npm install` will install Express.js and its dependencies as declared in `package.json`.
 
 4. **Verify the installation:**
 
@@ -119,6 +120,7 @@ Press `Ctrl + C` in the terminal where the server is running to stop it.
 | Method | Endpoint | Description | Status Code | Content-Type |
 |--------|----------|-------------|-------------|--------------|
 | GET | `/` | Returns a greeting message | 200 | text/plain |
+| GET | `/evening` | Returns a good evening message | 200 | text/plain |
 
 ### Request/Response Details
 
@@ -152,24 +154,59 @@ Keep-Alive: timeout=5
 Hello, World!
 ```
 
+#### GET /evening
+
+**Request:**
+- No request body required
+- No query parameters
+- No authentication required
+
+**Response:**
+- **Status Code:** `200 OK`
+- **Content-Type:** `text/plain`
+- **Body:** `Good evening`
+
+**Example Request:**
+
+```bash
+curl -X GET http://127.0.0.1:3000/evening
+```
+
+**Example Response:**
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Date: [current date]
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+Good evening
+```
+
 ### Request Flow Diagram
 
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant S as Server (localhost:3000)
+    participant S as Express Server (localhost:3000)
     
     C->>S: HTTP GET /
-    S->>S: Set statusCode = 200
-    S->>S: Set Content-Type: text/plain
-    S-->>C: Response: "Hello, World!"
+    S->>S: Express routes to GET / handler
+    S->>S: res.type('text').send('Hello, World!\n')
+    S-->>C: 200 OK "Hello, World!"
+
+    C->>S: HTTP GET /evening
+    S->>S: Express routes to GET /evening handler
+    S->>S: res.type('text').send('Good evening')
+    S-->>C: 200 OK "Good evening"
 ```
 
-*Source: server.js:6-10*
+*Source: server.js — Express.js route handlers*
 
 ## Configuration
 
-The server configuration is defined through constants in `server.js`:
+The Express.js server configuration is defined through constants in `server.js`:
 
 | Constant | Value | Type | Description | Source |
 |----------|-------|------|-------------|--------|
@@ -300,10 +337,10 @@ For production, consider adding structured logging:
 // Basic console logging (current implementation)
 console.log(`Server running at http://${hostname}:${port}/`);
 
-// For production, consider adding request logging
-const server = http.createServer((req, res) => {
+// For production, consider adding request logging middleware
+app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  // ... rest of handler
+  next();
 });
 ```
 
@@ -311,22 +348,24 @@ const server = http.createServer((req, res) => {
 
 ```mermaid
 flowchart LR
-    A[Start] --> B[Load http module]
+    A[Start] --> B[Load Express.js]
     B --> C[Define hostname & port]
-    C --> D[Create HTTP Server]
-    D --> E[Attach Request Handler]
-    E --> F[Listen on port 3000]
-    F --> G[Log server URL]
-    G --> H[Ready for Requests]
+    C --> D[Create Express app]
+    D --> E[Register GET / handler]
+    E --> F[Register GET /evening handler]
+    F --> G[Listen on port 3000]
+    G --> H[Log server URL]
+    H --> I[Ready for Requests]
 ```
 
 ## Project Structure
 
 ```
 hello_world/
-├── server.js           # Main HTTP server entry point (15 lines)
-├── package.json        # NPM configuration and project metadata
+├── server.js           # Express.js server with GET / and GET /evening routes
+├── package.json        # NPM configuration and project metadata (express dependency)
 ├── package-lock.json   # Dependency lock file for reproducible installs
+├── node_modules/       # Installed dependencies (Express.js and transitive deps)
 └── README.md           # Project documentation (this file)
 ```
 
@@ -334,8 +373,8 @@ hello_world/
 
 | File | Purpose | Key Contents |
 |------|---------|--------------|
-| `server.js` | Main application entry point | HTTP server creation, request handling, server startup |
-| `package.json` | Project configuration | Name, version, description, license, scripts |
+| `server.js` | Main application entry point | Express.js app, GET / and GET /evening route handlers, server startup |
+| `package.json` | Project configuration | Name, version, description, license, scripts, express dependency |
 | `package-lock.json` | Dependency lock | Ensures consistent installs across environments |
 | `README.md` | Documentation | Setup, usage, API reference, deployment guide |
 
@@ -408,4 +447,4 @@ SOFTWARE.
 
 ---
 
-**Version:** 1.0.0 | **Author:** hxu | **Project:** hello_world
+**Version:** 1.1.0 | **Author:** hxu | **Project:** hello_world
