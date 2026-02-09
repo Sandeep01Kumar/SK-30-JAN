@@ -1,9 +1,10 @@
 {
     "name": "hello_world",
     "version": "1.0.0",
-    "description": "Hello world in Node.js",
+    "description": "Hello world Express.js server in Node.js",
     "main": "index.js",
     "scripts": {
+        "start": "node server.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "hxu",
