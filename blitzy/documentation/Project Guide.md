@@ -1,138 +1,139 @@
-# Project Guide: Production-Ready HTTP Server Enhancement
+# Project Guide: Production-Ready Node.js HTTP Server Bug Fix
 
 ## 1. Executive Summary
 
-**Project Completion: 68.8% — 11 hours completed out of 16 total hours**
+**Project Completion: 75.0% (15 hours completed out of 20 total hours)**
 
-This project enhances a minimal Node.js HTTP server (`server.js`) with production-ready features including comprehensive error handling, graceful shutdown capabilities, input validation, resource cleanup with connection tracking, and timeout configuration. A comprehensive 9-test suite was also created to validate all new functionality.
+This project addressed a critical code design deficiency in `server.js` — a minimal Node.js HTTP server that lacked production-ready features including error handling, graceful shutdown, input validation, resource cleanup, and robust HTTP request processing.
 
 ### Key Achievements
-- Complete rewrite of `server.js` from 14 lines to 197 lines with 7 major production features
-- Created `server.test.js` (376 lines) with 9 tests — all passing at 100%
-- Updated `package.json` with Jest/supertest test infrastructure
-- All validation gates passed: syntax, compilation, tests, runtime, and dependency audit
-- Zero issues remaining from validation; zero security vulnerabilities detected
+- ✅ **server.js** completely rewritten from 14 lines to 197 lines with all requested production-ready features
+- ✅ **server.test.js** created with 9 comprehensive tests — **all 9 passing (100%)**
+- ✅ **package.json** updated with Jest test infrastructure and start script
+- ✅ Zero compilation errors, zero test failures, clean runtime validation
+- ✅ No issues found or remaining from the Final Validator process
 
-### What Remains (Human Tasks)
-All code implementation is complete and verified. The remaining 5 hours of estimated work consists of operational and deployment tasks that require human judgment and environment-specific decisions: code review and merge approval, environment variable externalization, CI/CD pipeline configuration, and production deployment verification.
+### What Remains (5 hours)
+The core implementation is complete and validated. Remaining work consists of human review, production environment configuration, and deployment preparation — tasks that are outside the direct code scope but necessary for production deployment.
 
 ---
 
 ## 2. Validation Results Summary
 
-### Gate Results — ALL PASSED
+### 2.1 Final Validator Accomplishments
+The Final Validator confirmed that all prior agent work was correctly implemented. No fixes were needed — all code was already in correct, working state.
 
-| Gate | Status | Evidence |
-|------|--------|---------|
-| Dependencies Installed | ✅ PASS | `npm install` — jest@29.7.0, supertest@7.2.2 installed |
-| Code Compiled (Syntax) | ✅ PASS | `node -c server.js` and `node -c server.test.js` — zero errors |
-| All Tests Pass | ✅ PASS | 9/9 tests passing (100%) via `CI=true npx jest --ci --verbose` |
-| Application Runs | ✅ PASS | Server starts on 127.0.0.1:3000, returns "Hello, World!", handles SIGTERM |
-| Dependency Audit | ✅ PASS | `npm audit` — 0 vulnerabilities found |
-| Working Tree | ✅ CLEAN | `git status` — nothing to commit |
+### 2.2 Compilation Results
+| File | Check Command | Result |
+|------|--------------|--------|
+| `server.js` | `node --check server.js` | ✅ Syntax OK |
+| `server.test.js` | `node --check server.test.js` | ✅ Syntax OK |
 
-### Test Results (9/9 — 100%)
-
+### 2.3 Test Results
 ```
 PASS ./server.test.js
   Server Tests
     Basic Functionality
-      ✓ should return Hello, World! on GET / (82 ms)
-      ✓ should return correct Content-Type header (13 ms)
-      ✓ should handle multiple requests (30 ms)
+      ✓ should return Hello, World! on GET /              (76 ms)
+      ✓ should return correct Content-Type header          (11 ms)
+      ✓ should handle multiple requests                    (26 ms)
     Graceful Shutdown
-      ✓ should handle SIGTERM gracefully (1092 ms)
-      ✓ should handle SIGINT gracefully (1084 ms)
+      ✓ should handle SIGTERM gracefully                   (1084 ms)
+      ✓ should handle SIGINT gracefully                    (1075 ms)
     Request Logging
-      ✓ should log incoming requests with timestamp, method and URL (1104 ms)
+      ✓ should log incoming requests with timestamp, method and URL (1103 ms)
     HTTP Methods
-      ✓ should handle POST requests (14 ms)
-      ✓ should handle HEAD requests (13 ms)
+      ✓ should handle POST requests                        (13 ms)
+      ✓ should handle HEAD requests                        (13 ms)
   Server Configuration
-    ✓ should export correct server configuration (111 ms)
+    ✓ should export correct server configuration           (122 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       9 passed, 9 total
-Time:        4.195 s
 ```
 
-### Fixes Applied During Validation
-- **Fix server cleanup timing** (commit `ef47dfe`): Resolved test cleanup timing issue in Server Configuration test by adding a polling mechanism to wait for `server.listening` before calling `server.close()`
+### 2.4 Runtime Validation
+| Test | Command | Expected | Result |
+|------|---------|----------|--------|
+| GET / | `curl http://127.0.0.1:3000/` | `Hello, World!` | ✅ Pass |
+| POST / | `curl -X POST http://127.0.0.1:3000/` | `Hello, World!` | ✅ Pass |
+| HEAD / | `curl -I http://127.0.0.1:3000/` | `Content-Type: text/plain` | ✅ Pass |
+| Request logging | Server stdout | ISO timestamp + method + URL | ✅ Pass |
+| Server startup | `node server.js` | `Server running at http://127.0.0.1:3000/` | ✅ Pass |
 
-### Runtime Validation Results
-- **Server Start**: `node server.js` → Outputs `Server running at http://127.0.0.1:3000/`
-- **GET /**: Returns HTTP 200, Content-Type: text/plain, body: `Hello, World!\n`
-- **Request Logging**: ISO timestamps visible (e.g., `2026-02-10T13:35:37.306Z - GET /`)
-- **SIGTERM Shutdown**: Process exits cleanly after signal received
-- **EADDRINUSE Handling**: Error detected with user-friendly message
+### 2.5 Dependency Status
+| Package | Version | Type | Status |
+|---------|---------|------|--------|
+| jest | 29.7.0 | devDependency | ✅ Installed |
+| supertest | 7.2.2 | devDependency | ✅ Installed |
+| (No production deps) | — | — | ✅ By design |
+
+### 2.6 Fixes Applied During Validation
+No fixes were required — all code was correctly implemented by prior agents.
 
 ---
 
-## 3. Hours Breakdown and Completion Analysis
+## 3. Hours Breakdown and Completion
 
-### Completed Hours: 11 hours
+### 3.1 Calculation
 
+**Completed Hours: 15h**
 | Component | Hours | Details |
 |-----------|-------|---------|
-| server.js production rewrite | 5.0h | Error handling (server, client, request, response), graceful shutdown with connection draining, input validation, request logging, timeout configuration, JSDoc documentation, module exports |
-| server.test.js creation | 4.0h | 9 tests across 5 describe blocks, process-spawning shutdown tests, supertest integration, server configuration validation |
-| package.json configuration | 0.5h | Jest/supertest devDependencies, test script with flags, npm start script |
-| Debugging and validation | 1.5h | Fix test cleanup timing, dependency installation, syntax checking, runtime verification |
+| server.js rewrite | 6h | 197-line production-ready implementation with error handling, graceful shutdown, input validation, connection tracking, timeout config, request logging, JSDoc documentation |
+| server.test.js creation | 5h | 376-line test suite with 9 tests using Jest + supertest + child_process spawn for signal testing |
+| Package configuration | 1h | package.json updates, dependency installation, script configuration |
+| Validation and testing | 2h | Compilation checks, test execution, runtime verification, manual curl testing |
+| Test fix (cleanup timing) | 1h | Fixed Server Configuration test cleanup timing issue |
 
-### Remaining Hours: 5 hours (post enterprise multipliers)
+**Remaining Hours: 5h** (after enterprise multipliers: base 3.5h × 1.15 compliance × 1.25 uncertainty ≈ 5h)
+| Task | Base Hours | Details |
+|------|-----------|---------|
+| Human code review and PR merge | 1h | Review 197-line server.js and 376-line test suite |
+| Environment variable externalization | 0.5h | Make hostname/port configurable via process.env |
+| Production deployment configuration | 1h | Dockerfile, health check endpoint, container config |
+| Production smoke testing | 0.5h | Verify behavior in target deployment environment |
+| Monitoring and alerting integration | 0.5h | Connect console.error outputs to log aggregation |
+| Enterprise multipliers | 1.5h | Compliance (1.15x) + uncertainty buffer (1.25x) |
 
-Pre-multiplier base: 3.5 hours × 1.15 (compliance) × 1.25 (uncertainty) = 5.0 hours
+**Total Project Hours: 20h**
+**Completion: 15h completed / 20h total = 75.0%**
 
-### Completion Calculation
-
-```
-Completed:  11 hours
-Remaining:   5 hours (post-multiplier)
-Total:      16 hours
-Completion: 11 / 16 = 68.8%
-```
-
-### Visual Representation
+### 3.2 Visual Representation
 
 ```mermaid
 pie title Project Hours Breakdown
-    "Completed Work" : 11
+    "Completed Work" : 15
     "Remaining Work" : 5
 ```
 
 ---
 
-## 4. Detailed Remaining Task Table
+## 4. Feature Implementation Status
 
-All code implementation is complete. The remaining tasks are operational and deployment concerns requiring human judgment.
+All 5 AAP-specified features have been fully implemented and tested:
 
-| # | Task | Description | Action Steps | Hours | Priority | Severity |
-|---|------|-------------|--------------|-------|----------|----------|
-| 1 | Code Review and Merge Approval | Senior developer reviews the server.js rewrite (197 lines), test suite (376 lines), and package.json changes for code quality, correctness, and security | 1. Review server.js error handling patterns. 2. Verify graceful shutdown logic. 3. Review test coverage adequacy. 4. Approve and merge PR. | 1.5 | High | Medium |
-| 2 | Environment Variable Externalization | Replace hardcoded `hostname` (127.0.0.1) and `port` (3000) with configurable environment variables for deployment flexibility | 1. Add `process.env.PORT \|\| 3000` pattern. 2. Add `process.env.HOST \|\| '127.0.0.1'` pattern. 3. Update tests to use dynamic values. 4. Document variables. | 1.0 | Medium | Low |
-| 3 | CI/CD Pipeline Configuration | Configure automated test execution in the project's CI/CD pipeline (GitHub Actions, Jenkins, GitLab CI, etc.) | 1. Create workflow/pipeline config file. 2. Add `npm install` and `npm test` steps. 3. Configure Node.js v20 environment. 4. Verify pipeline passes. | 1.5 | Medium | Medium |
-| 4 | Production Smoke Testing | Verify graceful shutdown, error handling, and timeout behavior in the target production/staging environment | 1. Deploy to staging. 2. Test SIGTERM handling from orchestrator. 3. Verify request logging in production logs. 4. Validate timeout behavior under load. | 1.0 | Low | Low |
-| | **Total Remaining Hours** | | | **5.0** | | |
+| # | Feature | Status | Evidence |
+|---|---------|--------|----------|
+| 1 | Error handling | ✅ Complete | `server.on('error')`, `server.on('clientError')`, `req.on('error')`, `res.on('error')`, `process.on('uncaughtException')`, `process.on('unhandledRejection')` |
+| 2 | Graceful shutdown | ✅ Complete | SIGTERM/SIGINT handlers with `server.close()`, 10s force-close timeout, connection draining |
+| 3 | Input validation | ✅ Complete | req/res null checks, 503 rejection during shutdown |
+| 4 | Resource cleanup | ✅ Complete | `Set`-based connection tracking, socket cleanup on close, force destroy on shutdown timeout |
+| 5 | Robust HTTP processing | ✅ Complete | 30s request timeout, 5s keepAlive timeout, request logging with ISO timestamps |
 
 ---
 
-## 5. Scope Completion Checklist
+## 5. Remaining Human Tasks
 
-All items from the Agent Action Plan scope have been implemented and verified:
-
-| Requirement | Status | Implementation | Test Coverage |
-|-------------|--------|---------------|--------------|
-| Error handling (server errors) | ✅ Complete | `server.on('error')` for EADDRINUSE, EACCES | Server Configuration test |
-| Error handling (client errors) | ✅ Complete | `server.on('clientError')` with 400 response | Implicit via server error handling |
-| Error handling (request/response) | ✅ Complete | `req.on('error')` and `res.on('error')` handlers | Basic Functionality tests |
-| Graceful shutdown (SIGTERM) | ✅ Complete | `process.on('SIGTERM')` → `gracefulShutdown()` | Graceful Shutdown test (SIGTERM) |
-| Graceful shutdown (SIGINT) | ✅ Complete | `process.on('SIGINT')` → `gracefulShutdown()` | Graceful Shutdown test (SIGINT) |
-| Input validation | ✅ Complete | req/res existence check, 503 during shutdown | Basic Functionality tests |
-| Resource cleanup | ✅ Complete | Set-based connection tracking, socket cleanup | Graceful Shutdown tests |
-| Timeout configuration | ✅ Complete | 30s request timeout, 5s keep-alive | Server Configuration test |
-| Request logging | ✅ Complete | ISO timestamp + method + URL per request | Request Logging test |
-| Process safety nets | ✅ Complete | uncaughtException, unhandledRejection handlers | Graceful Shutdown tests |
-| Test suite | ✅ Complete | 9 tests, 100% passing | All 9 tests passing |
+| # | Task | Priority | Severity | Hours | Description |
+|---|------|----------|----------|-------|-------------|
+| 1 | Code review and PR merge | High | Medium | 1.0h | Review server.js (197 lines) and server.test.js (376 lines) for correctness, security, and adherence to team coding standards. Verify all 9 tests pass in CI environment. Approve and merge PR. |
+| 2 | Environment variable externalization | Medium | Low | 0.5h | Replace hardcoded `hostname = '127.0.0.1'` and `port = 3000` with `process.env.HOST \|\| '127.0.0.1'` and `process.env.PORT \|\| 3000` for deployment flexibility. |
+| 3 | Production deployment configuration | Medium | Medium | 1.0h | Create Dockerfile with Node.js 20 base image, configure health check endpoint, set up container orchestration (Docker Compose/Kubernetes) with SIGTERM forwarding. |
+| 4 | Production smoke testing | Medium | Medium | 0.5h | Run server in target environment, verify HTTP responses, test graceful shutdown with actual SIGTERM, confirm request logging output. |
+| 5 | Monitoring and alerting integration | Low | Low | 0.5h | Connect `console.error` outputs to centralized log aggregation (e.g., CloudWatch, Datadog). Set up alerts for `Server error:`, `Uncaught Exception:`, and `Unhandled Rejection:` patterns. |
+| 6 | Enterprise buffer (compliance + uncertainty) | — | — | 1.5h | Multiplier applied across remaining tasks (1.15x compliance × 1.25x uncertainty) to account for environment-specific issues and review iterations. |
+| | **Total Remaining Hours** | | | **5.0h** | |
 
 ---
 
@@ -140,247 +141,180 @@ All items from the Agent Action Plan scope have been implemented and verified:
 
 ### 6.1 System Prerequisites
 
-| Software | Required Version | Verification Command |
-|----------|-----------------|---------------------|
-| Node.js | v20.x or later | `node --version` |
-| npm | v10.x or later | `npm --version` |
-| Git | Any recent version | `git --version` |
+| Requirement | Minimum Version | Verified Version |
+|-------------|----------------|-----------------|
+| Node.js | ≥ 10.0.0 | v20.19.5 |
+| npm | ≥ 6.0.0 | 10.8.2 |
+| Operating System | Linux, macOS, or Windows | Ubuntu-based Linux (validated) |
 
-### 6.2 Repository Setup
+### 6.2 Environment Setup
 
 ```bash
-# Clone the repository and checkout the feature branch
+# Clone the repository and switch to the feature branch
 git clone <repository-url>
-cd <repository-directory>
+cd <repository-name>
 git checkout blitzy-61c6cd10-eef1-4b48-bc09-009491178e3c
 ```
+
+No environment variables are required for basic operation. The server defaults to:
+- **Hostname:** `127.0.0.1`
+- **Port:** `3000`
 
 ### 6.3 Dependency Installation
 
 ```bash
-# Install all dependencies (jest and supertest as devDependencies)
+# Install all dependencies (dev only — no production deps)
 npm install
 ```
 
-**Expected Output:**
+**Expected output:**
 ```
-added 278 packages in 2s
+added 278 packages in Xs
 ```
 
-**Verify Installation:**
+**Verify installation:**
 ```bash
-npm ls --depth=0
+npm ls
 ```
 
-**Expected Output:**
+**Expected output:**
 ```
 hello_world@1.0.0
 ├── jest@29.7.0
 └── supertest@7.2.2
 ```
 
-### 6.4 Syntax Verification
+### 6.4 Application Startup
 
 ```bash
-# Verify both source files have no syntax errors
-node -c server.js && echo "server.js OK"
-node -c server.test.js && echo "server.test.js OK"
-```
-
-**Expected Output:**
-```
-server.js OK
-server.test.js OK
-```
-
-### 6.5 Running Tests
-
-```bash
-# Run the full test suite (recommended for CI)
-CI=true npx jest --watchAll=false --ci --verbose --forceExit --detectOpenHandles --testTimeout=15000
-```
-
-**Or use the configured npm script:**
-```bash
-CI=true npm test
-```
-
-**Expected Output:**
-```
-PASS ./server.test.js
-  Server Tests
-    Basic Functionality
-      ✓ should return Hello, World! on GET /
-      ✓ should return correct Content-Type header
-      ✓ should handle multiple requests
-    Graceful Shutdown
-      ✓ should handle SIGTERM gracefully
-      ✓ should handle SIGINT gracefully
-    Request Logging
-      ✓ should log incoming requests with timestamp, method and URL
-    HTTP Methods
-      ✓ should handle POST requests
-      ✓ should handle HEAD requests
-  Server Configuration
-    ✓ should export correct server configuration
-
-Test Suites: 1 passed, 1 total
-Tests:       9 passed, 9 total
-```
-
-### 6.6 Running the Server
-
-```bash
-# Start the HTTP server
+# Start the server (either command works)
+npm start
+# or
 node server.js
 ```
 
-**Expected Output:**
+**Expected output:**
 ```
 Server running at http://127.0.0.1:3000/
 ```
 
-**Or use the npm start script:**
+### 6.5 Verification Steps
+
+**Step 1: Verify HTTP response**
 ```bash
-npm start
-```
-
-### 6.7 Manual Verification
-
-In a separate terminal while the server is running:
-
-```bash
-# Test basic GET request
 curl http://127.0.0.1:3000/
-# Expected: Hello, World!
-
-# Test response headers
-curl -I http://127.0.0.1:3000/
-# Expected: HTTP/1.1 200 OK, Content-Type: text/plain
-
-# Test POST request
-curl -X POST http://127.0.0.1:3000/
-# Expected: Hello, World!
-
-# Test graceful shutdown (in the server's terminal)
-# Press Ctrl+C or send: kill -TERM <server-pid>
-# Expected: "SIGTERM received. Starting graceful shutdown..."
 ```
+Expected: `Hello, World!`
 
-### 6.8 Dependency Security Audit
+**Step 2: Verify request logging (check server terminal)**
+Expected log line: `2026-02-17T13:58:19.939Z - GET /`
+
+**Step 3: Verify Content-Type header**
+```bash
+curl -I http://127.0.0.1:3000/
+```
+Expected: `Content-Type: text/plain`
+
+**Step 4: Run the test suite**
+```bash
+CI=true npm test
+```
+Expected: `Tests: 9 passed, 9 total`
+
+**Step 5: Verify graceful shutdown**
+```bash
+# In one terminal, start the server:
+node server.js
+
+# In another terminal, send SIGTERM:
+kill -TERM <server_pid>
+```
+Expected server output: `SIGTERM received. Starting graceful shutdown...`
+
+### 6.6 Test Commands
 
 ```bash
-npm audit
+# Run all tests with verbose output
+CI=true npx jest --detectOpenHandles --forceExit --testTimeout=15000 --verbose
+
+# Run only basic functionality tests
+CI=true npx jest --testNamePattern="Basic Functionality" --forceExit
+
+# Run only graceful shutdown tests
+CI=true npx jest --testNamePattern="Graceful Shutdown" --forceExit --testTimeout=15000
+
+# Syntax check only (no execution)
+node --check server.js && node --check server.test.js
 ```
 
-**Expected Output:**
-```
-found 0 vulnerabilities
-```
+### 6.7 Troubleshooting
 
-### 6.9 Troubleshooting
-
-| Issue | Cause | Resolution |
-|-------|-------|------------|
-| `EADDRINUSE: Port 3000 in use` | Another process on port 3000 | Kill the process: `lsof -ti:3000 \| xargs kill` or change port |
-| Tests hang / timeout | Server not cleaning up | Ensure `--forceExit --detectOpenHandles` flags are used |
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| `EADDRINUSE: address already in use` | Port 3000 is occupied | Kill the existing process: `lsof -ti:3000 \| xargs kill` or change the port in server.js |
+| Tests hang indefinitely | Missing `--forceExit` flag | Always use: `npx jest --forceExit --detectOpenHandles` |
 | `Cannot find module 'jest'` | Dependencies not installed | Run `npm install` |
-| `EACCES: Permission denied` | Insufficient privileges for port | Use a port > 1024 or run with elevated permissions |
+| Graceful shutdown tests fail on Windows | Signal handling differs on Windows | Tests include Windows fallback; ensure Node.js ≥ 16 |
 
 ---
 
-## 7. Files Modified Summary
+## 7. Risk Assessment
 
-| File | Status | Lines (Before → After) | Change Description |
-|------|--------|----------------------|-------------------|
-| `server.js` | UPDATED | 14 → 197 (+183) | Complete rewrite with error handling, graceful shutdown, input validation, connection tracking, timeouts, request logging |
-| `server.test.js` | CREATED | 0 → 376 (+376) | Comprehensive 9-test Jest suite with supertest for HTTP assertions and process-spawning for signal tests |
-| `package.json` | UPDATED | 10 → 16 (+7, -2) | Added jest/supertest devDependencies, test script with jest flags, start script |
-| `package-lock.json` | AUTO-GENERATED | 0 → 4150 | Deterministic dependency snapshot (auto-managed by npm) |
-| `.gitignore` | UPDATED | 0 → 1 (+1) | Added `node_modules/` entry |
-| `README.md` | UNCHANGED | 2 → 2 | Not modified (contains "Do not touch!" directive) |
+### 7.1 Technical Risks
 
-### Git Commit History (Implementation Commits)
+| Risk | Severity | Likelihood | Mitigation |
+|------|----------|------------|------------|
+| Hardcoded hostname/port limits deployment flexibility | Low | Medium | Externalize to environment variables: `process.env.HOST`, `process.env.PORT` |
+| `console.log`/`console.error` insufficient for production logging | Low | Medium | Integrate structured logging library (e.g., Pino) in a future iteration |
+| 10-second force shutdown timeout may be too short for long-running requests | Low | Low | Make timeout configurable via environment variable |
 
-| Commit | Date | Description |
-|--------|------|-------------|
-| `a90b984` | 2026-01-30 | Setup: Add test infrastructure with Jest and supertest |
-| `a7d9f55` | 2026-01-30 | feat(server): add production-ready features to HTTP server |
-| `4f857b1` | 2026-01-30 | Add comprehensive test suite for production-ready HTTP server |
-| `ef47dfe` | 2026-01-30 | Fix server cleanup timing in Server Configuration test |
+### 7.2 Security Risks
+
+| Risk | Severity | Likelihood | Mitigation |
+|------|----------|------------|------------|
+| No rate limiting on incoming requests | Medium | Medium | Implement rate limiting via reverse proxy (nginx) or middleware in future |
+| No HTTPS/TLS support | Medium | High | Deploy behind TLS-terminating reverse proxy (nginx, AWS ALB) |
+| Server bound to 127.0.0.1 (localhost only) | Low | Low | Intentional for security; change to `0.0.0.0` only when behind a proxy |
+
+### 7.3 Operational Risks
+
+| Risk | Severity | Likelihood | Mitigation |
+|------|----------|------------|------------|
+| No health check endpoint for load balancers | Medium | Medium | Add `/health` endpoint returning 200 OK |
+| No structured logging format (JSON) | Low | Medium | Replace console.log with JSON-formatted log output |
+| No process manager (PM2, systemd) configured | Low | Medium | Deploy with container orchestration or PM2 for auto-restart |
+
+### 7.4 Integration Risks
+
+| Risk | Severity | Likelihood | Mitigation |
+|------|----------|------------|------------|
+| No CI/CD pipeline configured | Medium | High | Set up GitHub Actions or equivalent with `npm test` step |
+| No container image defined | Low | Medium | Create Dockerfile with multi-stage build |
 
 ---
 
-## 8. Risk Assessment
+## 8. Files Changed Summary
 
-### Technical Risks
-
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Hardcoded hostname/port limits deployment flexibility | Low | High | Externalize to environment variables (Task #2) |
-| Console.log-based logging not suitable for log aggregation | Low | Medium | Consider structured logging library for production (explicitly excluded from current scope) |
-| Force shutdown timeout (10s) may be insufficient for long-running requests | Low | Low | Make shutdown timeout configurable via environment variable |
-
-### Security Risks
-
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| No rate limiting on incoming requests | Medium | Medium | Add rate limiting middleware if publicly exposed (explicitly excluded from scope) |
-| No HTTPS/TLS encryption | Medium | Medium | Add TLS configuration or use reverse proxy for production (explicitly excluded from scope) |
-| No request body size limits | Low | Low | Add Content-Length validation if body parsing is added |
-
-### Operational Risks
-
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| No health check endpoint for orchestrator readiness probes | Medium | High | Add `/health` endpoint returning server status |
-| No CI/CD pipeline configured | Medium | High | Configure pipeline (Task #3) |
-| No container configuration (Dockerfile) | Low | Medium | Create Dockerfile if containerized deployment is planned |
-
-### Integration Risks
-
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Production environment differences from dev | Low | Medium | Run production smoke tests (Task #4) |
-| Signal handling may differ across OS/container runtimes | Low | Low | Test SIGTERM/SIGINT in target deployment environment |
-
-> **Note:** Many security and operational risks listed above were **explicitly excluded from the project scope** per the Agent Action Plan (Section 0.5). They are documented here for production-readiness awareness only.
+| File | Action | Lines (Before → After) | Purpose |
+|------|--------|----------------------|---------|
+| `server.js` | UPDATED | 14 → 197 | Production-ready HTTP server with error handling, graceful shutdown, input validation, connection tracking, timeout config |
+| `server.test.js` | CREATED | 0 → 376 | Comprehensive Jest test suite with 9 tests |
+| `package.json` | UPDATED | 12 → 15 | Added start script, test script, devDependencies |
+| `.gitignore` | CREATED | 0 → 1 | Exclude node_modules/ |
+| `package-lock.json` | AUTO-GENERATED | 0 → 4150 | npm dependency lock file |
+| `README.md` | UNCHANGED | — | Not modified (contains "Do not touch!" warning) |
 
 ---
 
-## 9. Architecture and Implementation Notes
+## 9. Git History (Feature Branch)
 
-### Production Features Implemented
+| Commit | Author | Description |
+|--------|--------|-------------|
+| `a90b984` | Blitzy Agent | Setup: Add test infrastructure with Jest and supertest |
+| `a7d9f55` | Blitzy Agent | feat(server): add production-ready features to HTTP server |
+| `4f857b1` | Blitzy Agent | Add comprehensive test suite for production-ready HTTP server |
+| `ef47dfe` | Blitzy Agent | Fix server cleanup timing in Server Configuration test |
 
-The server.js rewrite adds 7 major production-ready features while maintaining backward compatibility:
-
-1. **Server Error Handling** — `server.on('error')` catches EADDRINUSE and EACCES with user-friendly messages and process exit
-2. **Client Error Handling** — `server.on('clientError')` responds with HTTP 400 for malformed requests
-3. **Connection Tracking** — `Set`-based tracking of all active sockets for graceful cleanup during shutdown
-4. **Timeout Configuration** — 30-second request timeout and 5-second keep-alive timeout to prevent resource exhaustion
-5. **Graceful Shutdown** — `gracefulShutdown()` function that sets shutdown flag, stops new connections, drains existing ones, and force-closes after 10 seconds
-6. **Process Signal Handlers** — SIGTERM, SIGINT, uncaughtException, and unhandledRejection all trigger graceful shutdown
-7. **Request Logging** — ISO 8601 timestamp with HTTP method and URL for every incoming request
-
-### Design Decisions
-
-- **Zero production dependencies**: Only Node.js built-in `http` module used (consistent with original design intent)
-- **CommonJS modules**: Maintained `require()` pattern to match original codebase conventions
-- **Module exports**: `server`, `port`, and `hostname` exported for testing and programmatic use
-- **Test isolation**: Test file creates independent server instances to avoid port conflicts and state leakage
-- **Process spawning for signal tests**: Graceful shutdown tests spawn real `node server.js` processes to verify actual signal behavior
-
----
-
-## 10. Conclusion
-
-This bug fix implementation is **code-complete** with all 5 scoped requirements fully implemented and verified:
-- ✅ Error handling (server, client, request, response level)
-- ✅ Graceful shutdown (SIGTERM, SIGINT, uncaughtException, unhandledRejection)
-- ✅ Input validation (request/response existence, shutdown rejection)
-- ✅ Resource cleanup (Set-based connection tracking, socket destruction)
-- ✅ Robust HTTP processing (timeouts, request logging, error handlers)
-
-All 9 tests pass at 100%. Zero issues remain from validation. The 5 hours of remaining work consists exclusively of operational tasks (code review, environment configuration, CI/CD, production verification) that require human judgment and environment-specific decisions.
-
-**Completion: 11 hours completed out of 16 total hours = 68.8% complete**
+**Branch:** `blitzy-61c6cd10-eef1-4b48-bc09-009491178e3c`
+**Base:** `origin/main`
+**Status:** Clean working tree, no uncommitted changes
